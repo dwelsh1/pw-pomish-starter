@@ -15,6 +15,7 @@ export class HtmlHelper {
 
     ansiToHtml(text: string): string {
         // Simple ANSI to HTML conversion - using Unicode escape sequences
+        // eslint-disable-next-line no-control-regex
         return text
             .replace(/\u001b\[31m/g, '<span style="color: red;">')
             .replace(/\u001b\[32m/g, '<span style="color: green;">')

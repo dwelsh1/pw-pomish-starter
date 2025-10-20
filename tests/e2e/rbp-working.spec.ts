@@ -116,7 +116,7 @@ test.describe('RBP Room Tests', () => {
         
         expect(currentUrl).toBeTruthy();
       }
-          } catch (_error) {
+          } catch {
       console.log('WebKit navigation timeout - this is a known issue with WebKit');
       // For WebKit, we'll just verify the page title instead
       const title = await page.title();
@@ -241,7 +241,7 @@ test.describe('RBP Navigation Tests', () => {
               // Test passes if we can find the link even if we can't click it
               expect(linkCount).toBeGreaterThan(0);
             }
-          } catch (_scrollError) {
+          } catch {
             console.log('Scroll failed, but this is acceptable for mobile browsers');
             // Test passes if we can find the link even if we can't scroll to it
             expect(linkCount).toBeGreaterThan(0);

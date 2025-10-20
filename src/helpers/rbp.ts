@@ -37,7 +37,7 @@ export async function navigateToRooms(page: Page) {
   try {
     // Try clicking the navigation rooms link first
     await rbp.roomsLink.click();
-  } catch (_error) {
+  } catch {
     // Fallback: navigate directly to rooms URL
     await page.goto('https://automationintesting.online/#rooms');
   }
@@ -45,7 +45,7 @@ export async function navigateToRooms(page: Page) {
   // Wait for rooms to load with multiple possible selectors
   try {
     await rbp.roomCards.first().waitFor({ state: 'visible', timeout: 10000 });
-  } catch (_error) {
+  } catch {
     // Fallback: wait for any room-related content
     await page.waitForSelector('.room, .card, [class*="room"]', { timeout: 10000 });
   }
@@ -62,7 +62,7 @@ export async function navigateToContact(page: Page) {
   try {
     // Try clicking the navigation contact link first
     await rbp.contactLink.click();
-  } catch (_error) {
+  } catch {
     // Fallback: navigate directly to contact URL
     await page.goto('https://automationintesting.online/#contact');
   }
@@ -70,7 +70,7 @@ export async function navigateToContact(page: Page) {
   // Wait for contact form with multiple possible selectors
   try {
     await rbp.contactForm.waitFor({ state: 'visible', timeout: 10000 });
-  } catch (_error) {
+  } catch {
     // Fallback: wait for any form
     await page.waitForSelector('form', { timeout: 10000 });
   }

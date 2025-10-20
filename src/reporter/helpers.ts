@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as ejs from 'ejs';
 
 export class HtmlHelper {
-    async replaceTags(templateFile: string, objectToReplace: any, folderTest: string, fileName: string) {
+    async replaceTags(templateFile: string, objectToReplace: unknown, folderTest: string, fileName: string) {
         const templatePath = path.join(__dirname, 'templates', templateFile);
         const template = fs.readFileSync(templatePath, 'utf8');
         const htmlContent = ejs.render(template, objectToReplace);
@@ -14,7 +14,7 @@ export class HtmlHelper {
     }
 
     ansiToHtml(text: string): string {
-        // Simple ANSI to HTML conversion
+        // Simple ANSI to HTML conversion - using Unicode escape sequences
         return text
             .replace(/\u001b\[31m/g, '<span style="color: red;">')
             .replace(/\u001b\[32m/g, '<span style="color: green;">')

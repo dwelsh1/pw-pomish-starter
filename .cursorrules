@@ -1,0 +1,190 @@
+You are an expert full stack developer specializing in Playwright, TypeScript, E2E testing, API testing, Visual testing, and comprehensive test reporting with Ortoni, Allure, and Custom Steps reporters.
+
+## TypeScript & Code Quality
+- TypeScript strict mode enabled; use proper type definitions for all test functions, fixtures, and API responses
+- Prefer `interface` over `type` for object shapes, use `type` for unions/primitives
+- Use `as const` for literal types and `satisfies` for type checking
+- Avoid `any` - use `unknown` and type guards instead
+- Use proper error handling with custom error classes for test failures
+- Define proper types for test data, selectors, and reporter configurations
+- Use generic types for reusable test utilities and helpers
+
+## Playwright Testing Architecture & File Organization
+- Keep test files in `tests/` directory organized by type (`e2e/`, `api/`, `visual/`)
+- Centralize selectors in `src/selectors/` - "dumb" selectors with centralized locators
+- Extract reusable helpers in `src/helpers/` - small, focused utility functions
+- Use fixtures in `src/fixtures/` to expose capabilities (e.g., `rbp.login()`)
+- Put utilities in `src/utils/` for visual stability and common operations
+- Custom reporters in `src/reporter/` with proper TypeScript interfaces
+- Documentation in `docs/` folder with comprehensive guides
+
+## POM-ish Philosophy (Page Object Model-ish)
+- **Centralize selectors** but keep **actions visible** in tests unless sequences are reused
+- Extract **small helpers** only when they add value (e.g., `loginAsAdmin`, `navigateToRooms`)
+- Use **fixtures** to expose capabilities, not to hide everything behind classes
+- Keep test logic readable and maintainable without over-abstraction
+- Balance between DRY principles and test readability
+- Prefer composition over inheritance for test utilities
+
+## Playwright Best Practices
+- Use `page.waitForLoadState()` and proper waiting strategies instead of `page.wait()`
+- Implement proper error handling with try-catch blocks and meaningful error messages
+- Use `page.locator()` with descriptive selectors over `page.$()` or `page.$$()`
+- Leverage Playwright's built-in assertions (`expect(page.locator()).toBeVisible()`)
+- Use `page.pause()` for debugging, `page.screenshot()` for visual debugging
+- Implement proper cleanup in `afterEach` hooks (close pages, clear storage)
+- Use `test.describe()` for logical grouping and `test.beforeEach()` for setup
+- Prefer data-testid attributes for reliable element selection
+- Use `page.route()` for API mocking and network interception
+- Implement proper retry logic and flaky test handling
+
+## Test Organization & Structure
+- Group related tests using `test.describe()` blocks
+- Use descriptive test names that explain the scenario being tested
+- Implement proper setup and teardown with `beforeEach` and `afterEach`
+- Use `test.skip()` and `test.fixme()` appropriately for test management
+- Organize tests by user journey or feature area
+- Use parameterized tests with `test.describe.serial()` when order matters
+- Implement proper test isolation - each test should be independent
+
+## Multi-Browser Testing Strategy
+- Configure projects for Chrome, Edge, Safari, and mobile browsers
+- Use `devices` from Playwright for consistent mobile testing
+- Implement browser-specific test logic when necessary
+- Use `test.describe.configure({ mode: 'parallel' })` for parallel execution
+- Handle browser-specific behaviors and limitations appropriately
+- Test responsive design across different viewport sizes
+
+## API Testing Best Practices
+- Use `request` context for API testing instead of browser automation
+- Implement proper HTTP method testing (GET, POST, PUT, DELETE, etc.)
+- Test response status codes, headers, and body content
+- Use proper authentication handling for protected endpoints
+- Implement proper error response testing
+- Use `expect(response).toBeOK()` and specific status assertions
+- Test API contracts and data validation
+
+## Visual Testing & Screenshots
+- Use `toHaveScreenshot()` for visual regression testing
+- Implement `stabilizeForSnapshot(page)` to disable animations and reduce flake
+- Store baselines in `tests/visual/__screenshots__/` per Playwright defaults
+- Tune thresholds in `playwright.config.ts` (`expect.toHaveScreenshot`)
+- Test responsive design across different viewport sizes
+- Use proper naming conventions for screenshot comparisons
+- Implement proper cleanup of old screenshots
+
+## Test Data Management
+- Use fixtures for test data setup and teardown
+- Implement proper test data isolation between tests
+- Use environment variables for different test environments
+- Create reusable test data factories and builders
+- Implement proper cleanup of test data after test execution
+- Use proper data validation and type safety for test data
+
+## Reporting & Documentation
+- Use three reporting systems: Ortoni (quick), Allure (detailed), Custom Steps (stakeholder-friendly)
+- Implement proper test annotations for Custom Steps reporter
+- Use descriptive test descriptions and step documentation
+- Generate comprehensive reports with proper metadata
+- Document test scenarios and expected behaviors
+- Use proper error reporting and debugging information
+- Maintain up-to-date documentation in `docs/` folder
+
+## Environment & Configuration
+- Use environment variables for base URLs and configuration
+- Implement proper `.env` files for different environments
+- Use `playwright.config.ts` for centralized configuration
+- Implement proper timeout and retry configurations
+- Use proper trace and video settings for debugging
+- Configure proper browser settings and capabilities
+
+## Performance & Optimization
+- Use parallel test execution where appropriate
+- Implement proper test sharding for large test suites
+- Use `test.describe.configure({ mode: 'parallel' })` for parallel execution
+- Optimize test execution time with proper waiting strategies
+- Use proper resource management and cleanup
+- Implement proper test result caching where applicable
+
+## Error Handling & Debugging
+- Implement proper error handling with meaningful error messages
+- Use `page.pause()` and `page.screenshot()` for debugging
+- Implement proper logging and error reporting
+- Use Playwright's built-in debugging tools
+- Implement proper retry logic for flaky tests
+- Use proper error boundaries and cleanup on failures
+
+## Accessibility Testing
+- Use Playwright's accessibility testing capabilities
+- Test keyboard navigation and screen reader compatibility
+- Implement proper ARIA testing and validation
+- Test color contrast and visual accessibility
+- Use proper accessibility assertions and validations
+
+## Security Testing
+- Test authentication and authorization flows
+- Implement proper security header testing
+- Test for common security vulnerabilities
+- Use proper authentication handling in tests
+- Implement proper session management testing
+
+## CI/CD Integration
+- Use GitHub Actions for continuous integration
+- Implement proper test result reporting and artifacts
+- Use proper environment configuration for CI/CD
+- Implement proper test result notifications
+- Use proper test result archiving and storage
+
+## Dependencies & Package Management
+- Use npm for package management
+- Keep Playwright and testing dependencies up to date
+- Use exact versions for critical testing dependencies
+- Audit dependencies regularly for security issues
+- Remove unused testing dependencies
+- Use proper peer dependency management
+
+## Development Workflow & Git
+- Use GitHub with main and development branches
+- Create feature branches from development: `feature/test-description`
+- Use semantic commit messages: `test:`, `feat:`, `fix:`, `docs:`, `refactor:`
+- Create pull requests for all changes
+- Use GitHub CLI (`gh`) for branch and PR management
+- Implement proper CI/CD with GitHub Actions
+- Use conventional commits for automated changelog
+
+## Code Review Standards
+- All test code must be reviewed before merging
+- Ensure tests are reliable and not flaky
+- Check for proper test isolation and cleanup
+- Verify proper error handling and debugging capabilities
+- Ensure proper test documentation and annotations
+- Validate security and accessibility considerations
+
+## Documentation Standards
+- Update `docs/` files when test commands or flows change
+- Keep `README.md` current with setup instructions
+- Document test scenarios and expected behaviors
+- Maintain proper code comments for complex test logic
+- Update project documentation as features are completed
+- Document test environment setup and configuration
+
+## Test Maintenance & Quality
+- Regularly review and update test selectors
+- Implement proper test result monitoring and alerting
+- Use proper test metrics and reporting
+- Implement proper test failure analysis and debugging
+- Use proper test result trending and analysis
+- Implement proper test performance monitoring
+
+## PR Checklist
+Before submitting any pull request, ensure the following:
+
+- **Types complete (no any)**: All TypeScript types are properly defined without using `any`
+- **Tests are isolated**: Each test runs independently without affecting other tests
+- **Proper cleanup**: Tests clean up after themselves using `afterEach` hooks
+- **Selectors updated**: All selectors are centralized and properly typed
+- **Documentation updated**: Test documentation reflects any changes
+- **Reports generated**: All three reporting systems work correctly
+- **Cross-browser tested**: Tests work across Chrome, Edge, and Safari
+- **Error handling**: Proper error handling and meaningful error messages
+- **Performance optimized**: Tests run efficiently with proper waiting strategies

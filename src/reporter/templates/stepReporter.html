@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+    <title>Playwright Test Steps Report - <%= result.title %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .test header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        .test header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .test-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status {
+            font-size: 1.5rem;
+        }
+
+        .status.passed { color: #27ae60; }
+        .status.failed { color: #e74c3c; }
+        .status.skipped { color: #f39c12; }
+
+        .test-duration {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .chip.tags {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .section {
+            padding: 25px 30px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 .material-symbols-outlined {
+            font-size: 1.5rem;
+        }
+
+        .section p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .section ol {
+            padding-left: 20px;
+        }
+
+        .section li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .annotations {
+            background: #f8f9fa;
+        }
+
+        .annotations h2 {
+            color: #495057;
+        }
+
+        .media-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .media-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .media-item h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .media-item video {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .media-item img {
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .attachment-list {
+            list-style: none;
+        }
+
+        .attachment-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .attachment-list li:last-child {
+            border-bottom: none;
+        }
+
+        .attachment-list a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .attachment-list a:hover {
+            text-decoration: underline;
+        }
+
+        .error-section {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .error-section h3 {
+            color: #721c24;
+            margin-bottom: 10px;
+        }
+
+        .error-section pre {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #721c24;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #007bff;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        @media (max-width: 768px) {
+            .test header h1 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .test-details {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .media-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../summary.html" class="back-link">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Back to Summary
+        </a>
+
+        <div class="test">
+            <header>
+                <h1>
+                    <span class="test-details">
+                        <span class="material-symbols-outlined status <%= result.status %>">
+                            <%= result.statusIcon %>
+                        </span>
+                        <span><%= result.title %></span>
+                    </span>
+                    <span class="test-duration"><%= result.duration %></span>
+                </h1>
+                <div class="chips">
+                    <span class="chip <%= result.browser %>"><%= result.browser %></span>
+                    <% if(result.tags && result.tags.length > 0) { %>
+                        <span class="chip tags"><%= result.tags.join(', ') %></span>
+                    <% } %>
+                </div>
+            </header>
+
+            <% if (result.description && result.description !== 'No Description') { %>
+                <section class="section">
+                    <h2>
+                        <span class="material-symbols-outlined">description</span>
+                        Description
+                    </h2>
+                    <p><%= result.description %></p>
+                </section>
+            <% } %>
+
+            <section class="section annotations">
+                <% if (result.preConditions && result.preConditions.length > 0 && result.preConditions[0] !== 'No pre conditions') { %>
+                    <h2>
+                        <span class="material-symbols-outlined">play_arrow</span>
+                        Pre-conditions
+                    </h2>
+                    <ol>
+                        <% result.preConditions.forEach(function(pre) { %>
+                            <li><%= pre %></li>
+                        <% }); %>
+                    </ol>
+                <% } %>
+
+                <% if (result.steps && result.steps.length > 0 && result.steps[0] !== 'No steps') { %>
+                    <h2>
+                        <span class="material-symbols-outlined">list</span>
+                        Test Steps
+                    </h2>
+                    <ol>
+                        <% result.steps.forEach(function(step) { %>
+                            <li><%= step %></li>
+                        <% }); %>
+                    </ol>
+                <% } %>
+
+                <% if (result.postConditions && result.postConditions.length > 0 && result.postConditions[0] !== 'No post conditions') { %>
+                    <h2>
+                        <span class="material-symbols-outlined">check_circle</span>
+                        Post-conditions
+                    </h2>
+                    <ol>
+                        <% result.postConditions.forEach(function(post) { %>
+                            <li><%= post %></li>
+                        <% }); %>
+                    </ol>
+                <% } %>
+            </section>
+
+            <% if (result.videoPath || result.screenshotPaths?.length > 0 || result.attachments?.length > 0) { %>
+                <section class="section">
+                    <h2>
+                        <span class="material-symbols-outlined">attach_file</span>
+                        Media & Attachments
+                    </h2>
+                    <div class="media-section">
+                        <% if (result.videoPath) { %>
+                            <div class="media-item">
+                                <h3>Test Video</h3>
+                                <video controls>
+                                    <source src="<%= result.videoPath %>" type="video/webm">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        <% } %>
+
+                        <% if (result.screenshotPaths && result.screenshotPaths.length > 0) { %>
+                            <div class="media-item">
+                                <h3>Screenshots</h3>
+                                <% result.screenshotPaths.forEach(function(screenshot) { %>
+                                    <img src="<%= screenshot %>" alt="Test Screenshot" onclick="window.open(this.src, '_blank')">
+                                <% }); %>
+                            </div>
+                        <% } %>
+
+                        <% if (result.attachments && result.attachments.length > 0) { %>
+                            <div class="media-item">
+                                <h3>Attachments</h3>
+                                <ul class="attachment-list">
+                                    <% result.attachments.forEach(function(attachment) { %>
+                                        <% if (attachment.path) { %>
+                                            <li>
+                                                <a href="<%= attachment.path %>" target="_blank">
+                                                    <span class="material-symbols-outlined">download</span>
+                                                    <%= attachment.name %>
+                                                </a>
+                                            </li>
+                                        <% } %>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                        <% } %>
+                    </div>
+                </section>
+            <% } %>
+
+            <% if (result.errors && result.errors.length > 0) { %>
+                <section class="section">
+                    <h2>
+                        <span class="material-symbols-outlined">error</span>
+                        Errors
+                    </h2>
+                    <div class="error-section">
+                        <% result.errors.forEach(function(error) { %>
+                            <h3>Error Details</h3>
+                            <pre><%= error %></pre>
+                        <% }); %>
+                    </div>
+                </section>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

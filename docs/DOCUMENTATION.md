@@ -1,0 +1,125 @@
+# Documentation Overview
+
+This project includes comprehensive documentation for all three reporting systems and detailed guides for running tests. Here's what's available:
+
+## 📚 Main Documentation
+
+### **[README.md](./README.md)**
+- Project overview and quick start guide
+- Complete script reference
+- Project structure and configuration
+- Browser support and examples
+- Troubleshooting basics
+
+### **[RUNNING_TESTS.md](./RUNNING_TESTS.md)**
+- **Comprehensive guide to running tests and generating reports**
+- Detailed examples for all test execution scenarios
+- Test filtering and targeting options
+- Advanced usage patterns
+- Extensive troubleshooting section
+- Best practices and performance tips
+
+## 📊 Reporter-Specific Documentation
+
+### **[ORTONI_SETUP.md](./ORTONI_SETUP.md)**
+- Ortoni Report configuration and features
+- Quick setup and usage
+- Configuration options and customization
+- Best practices for development and CI/CD
+- Troubleshooting common issues
+
+### **[ALLURE_SETUP.md](./ALLURE_SETUP.md)**
+- Allure Report setup and advanced features
+- Rich reporting capabilities and analytics
+- Environment configuration and customization
+- CI/CD integration examples
+- Advanced configuration options
+
+### **[STEPS_SETUP.md](./STEPS_SETUP.md)**
+- Custom Steps Reporter implementation
+- Stakeholder-friendly reporting features
+- Test annotation system
+- Template customization
+- Advanced features and integration
+
+## 🎯 Quick Reference
+
+### Test Execution Commands
+```bash
+# All tests with different reporters
+npm run test:ortoni    # Ortoni Report
+npm run test:allure    # Allure Report
+npm run test:steps     # Custom Steps Report
+
+# Specific browsers
+npm run test:chromium  # Chrome only
+npm run test:edge      # Edge only
+npm run test:webkit    # Safari only
+
+# Test types
+npm run test:e2e      # E2E tests
+npm run test:api      # API tests
+npm run test:visual   # Visual tests
+```
+
+### Report Viewing Commands
+```bash
+# Ortoni Reports
+npm run show-ortoni-report
+
+# Allure Reports
+npm run allure:serve        # Dynamic (recommended)
+npm run allure:generate     # Static
+npm run allure:open         # Open static
+
+# Custom Steps Reports
+npm run steps:open
+```
+
+## 🔧 Configuration Files
+
+- **`playwright.config.ts`** - Main Playwright configuration with dynamic reporter switching
+- **`allure.config.js`** - Allure-specific configuration
+- **`package.json`** - All npm scripts and dependencies
+- **`.gitignore`** - Report directories and generated files
+
+## 🌐 Browser Support
+
+| Browser | Desktop | Mobile | Status |
+|---------|---------|--------|--------|
+| Chrome | ✅ | ✅ | Fully supported |
+| Edge | ✅ | ❌ | Fully supported |
+| Safari | ✅ | ✅ | Fully supported |
+| Firefox | ❌ | ❌ | Removed per user request |
+
+## 📈 Reporting Comparison
+
+| Feature | Ortoni | Allure | Custom Steps |
+|---------|--------|--------|--------------|
+| **Speed** | ⚡ Fast | 🐌 Slower | 🐌 Slower |
+| **Setup** | ✅ Simple | ⚠️ Medium | ⚠️ Medium |
+| **Charts** | ✅ Static | ✅ Interactive | ✅ Dynamic |
+| **History** | ✅ Yes | ✅ Yes | ❌ No |
+| **Stakeholder Friendly** | ⚠️ Moderate | ⚠️ Moderate | ✅ Excellent |
+| **CI/CD Integration** | ✅ Good | ✅ Excellent | ✅ Good |
+| **Customization** | ⚠️ Limited | ✅ Extensive | ✅ Full Control |
+
+## 🚀 Getting Started
+
+1. **Read the [README.md](./README.md)** for project overview
+2. **Follow [RUNNING_TESTS.md](./RUNNING_TESTS.md)** for comprehensive test execution guide
+3. **Choose your reporter** and read the specific setup guide:
+   - [ORTONI_SETUP.md](./ORTONI_SETUP.md) for quick, lightweight reporting
+   - [ALLURE_SETUP.md](./ALLURE_SETUP.md) for detailed analysis and CI/CD
+   - [STEPS_SETUP.md](./STEPS_SETUP.md) for stakeholder presentations
+
+## 🆘 Need Help?
+
+- **General questions**: Check [RUNNING_TESTS.md](./RUNNING_TESTS.md) troubleshooting section
+- **Reporter-specific issues**: Check the individual setup guides
+- **Configuration problems**: Review `playwright.config.ts` and configuration examples
+- **Browser issues**: See browser-specific troubleshooting in [RUNNING_TESTS.md](./RUNNING_TESTS.md)
+
+## 📝 Documentation Updates
+
+This documentation is maintained alongside the codebase. When adding new features or changing configurations, please update the relevant documentation files to keep them current and helpful for all users.

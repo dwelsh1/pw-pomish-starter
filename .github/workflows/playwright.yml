@@ -1,0 +1,235 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        reporter: [ortoni, allure, steps]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run Playwright tests with ${{ matrix.reporter }} reporter
+      run: npm run test:${{ matrix.reporter }}
+      env:
+        REPORTER_TYPE: ${{ matrix.reporter }}
+    
+    - name: Generate Allure Report (if Allure)
+      if: matrix.reporter == 'allure'
+      run: npm run allure:generate
+    
+    - name: Upload Allure Results
+      if: matrix.reporter == 'allure'
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-results-${{ github.run_number }}
+        path: allure-results/
+        retention-days: 30
+    
+    - name: Upload Allure Report
+      if: matrix.reporter == 'allure'
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report-${{ github.run_number }}
+        path: allure-report/
+        retention-days: 30
+    
+    - name: Upload Ortoni Report
+      if: matrix.reporter == 'ortoni'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ortoni-report-${{ github.run_number }}
+        path: ortoni-report/
+        retention-days: 30
+    
+    - name: Upload Custom Steps Report
+      if: matrix.reporter == 'steps'
+      uses: actions/upload-artifact@v4
+      with:
+        name: steps-report-${{ github.run_number }}
+        path: steps-report/
+        retention-days: 30
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.reporter }}-${{ github.run_number }}
+        path: test-results/
+        retention-days: 30
+
+  test-browsers:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        browser: [chromium, edge, webkit]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run tests on ${{ matrix.browser }}
+      run: npm run test:${{ matrix.browser }}
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.browser }}-${{ github.run_number }}
+        path: test-results/
+        retention-days: 30
+
+  test-mobile:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run mobile tests
+      run: npm run test:mobile
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-mobile-${{ github.run_number }}
+        path: test-results/
+        retention-days: 30
+
+  test-types:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        test-type: [e2e, api, visual]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run ${{ matrix.test-type }} tests
+      run: npm run test:${{ matrix.test-type }}
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.test-type }}-${{ github.run_number }}
+        path: test-results/
+        retention-days: 30
+
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run ESLint
+      run: npm run lint
+    
+    - name: Run TypeScript type check
+      run: npm run typecheck
+    
+    - name: Run Prettier format check
+      run: npm run format -- --check
+
+  release:
+    needs: [test, test-browsers, test-mobile, test-types, lint-and-typecheck]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run all tests for release
+      run: npm test
+    
+    - name: Generate Allure Report
+      run: npm run allure:generate
+    
+    - name: Upload Release Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-artifacts-${{ github.event.release.tag_name }}
+        path: |
+          ortoni-report/
+          allure-report/
+          steps-report/
+          test-results/
+        retention-days: 90

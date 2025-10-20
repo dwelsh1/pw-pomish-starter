@@ -234,7 +234,7 @@ test.describe('RBP Navigation Tests', () => {
               // Test passes if we can find the link even if we can't click it
               expect(linkCount).toBeGreaterThan(0);
             }
-          } catch (scrollError) {
+          } catch (_scrollError) {
             console.log('Scroll failed, but this is acceptable for mobile browsers');
             // Test passes if we can find the link even if we can't scroll to it
             expect(linkCount).toBeGreaterThan(0);

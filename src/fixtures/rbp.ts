@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { 
   loginAsAdmin, 
@@ -99,7 +99,7 @@ type RBPHelpers = {
 
 // Create a simple fixture without complex typing
 export const test = base.extend({
-  rbp: async ({ page }: { page: Page }, use: any) => {
+  rbp: async ({ page }: { page: Page }, use: unknown) => {
     const rbpHelpers: RBPHelpers = {
       auth: {
         loginAsAdmin: () => loginAsAdmin(page),
@@ -114,14 +114,14 @@ export const test = base.extend({
       booking: {
         create: (bookingData: BookingData) => createBooking(page, bookingData),
         getById: (bookingId: string) => getBookingById(page, bookingId),
-        createViaAPI: (bookingData: any) => createBookingViaAPI(page, bookingData),
-        updateViaAPI: (bookingId: string, bookingData: any) => updateBookingViaAPI(page, bookingId, bookingData),
+        createViaAPI: (bookingData: unknown) => createBookingViaAPI(page, bookingData),
+        updateViaAPI: (bookingId: string, bookingData: unknown) => updateBookingViaAPI(page, bookingId, bookingData),
         deleteViaAPI: (bookingId: string) => deleteBookingViaAPI(page, bookingId),
       },
       room: {
         create: (roomData: RoomData) => createRoom(page, roomData),
         getAllViaAPI: () => getRoomsViaAPI(page),
-        createViaAPI: (roomData: any) => createRoomViaAPI(page, roomData),
+        createViaAPI: (roomData: unknown) => createRoomViaAPI(page, roomData),
       },
       contact: {
         submitForm: (contactData: ContactData) => submitContactForm(page, contactData),

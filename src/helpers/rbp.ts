@@ -37,7 +37,7 @@ export async function navigateToRooms(page: Page) {
   try {
     // Try clicking the navigation rooms link first
     await rbp.roomsLink.click();
-  } catch (error) {
+  } catch (_error) {
     // Fallback: navigate directly to rooms URL
     await page.goto('https://automationintesting.online/#rooms');
   }
@@ -45,7 +45,7 @@ export async function navigateToRooms(page: Page) {
   // Wait for rooms to load with multiple possible selectors
   try {
     await rbp.roomCards.first().waitFor({ state: 'visible', timeout: 10000 });
-  } catch (error) {
+  } catch (_error) {
     // Fallback: wait for any room-related content
     await page.waitForSelector('.room, .card, [class*="room"]', { timeout: 10000 });
   }
@@ -62,7 +62,7 @@ export async function navigateToContact(page: Page) {
   try {
     // Try clicking the navigation contact link first
     await rbp.contactLink.click();
-  } catch (error) {
+  } catch (_error) {
     // Fallback: navigate directly to contact URL
     await page.goto('https://automationintesting.online/#contact');
   }
@@ -70,7 +70,7 @@ export async function navigateToContact(page: Page) {
   // Wait for contact form with multiple possible selectors
   try {
     await rbp.contactForm.waitFor({ state: 'visible', timeout: 10000 });
-  } catch (error) {
+  } catch (_error) {
     // Fallback: wait for any form
     await page.waitForSelector('form', { timeout: 10000 });
   }
@@ -200,14 +200,14 @@ export async function getBookingById(page: Page, bookingId: string) {
   return response.json();
 }
 
-export async function createBookingViaAPI(page: Page, bookingData: any) {
+export async function createBookingViaAPI(page: Page, bookingData: unknown) {
   const response = await page.request.post('https://automationintesting.online/booking/', {
     data: bookingData
   });
   return response.json();
 }
 
-export async function updateBookingViaAPI(page: Page, bookingId: string, bookingData: any) {
+export async function updateBookingViaAPI(page: Page, bookingId: string, bookingData: unknown) {
   const response = await page.request.put(`https://automationintesting.online/booking/${bookingId}`, {
     data: bookingData
   });
@@ -224,7 +224,7 @@ export async function getRoomsViaAPI(page: Page) {
   return response.json();
 }
 
-export async function createRoomViaAPI(page: Page, roomData: any) {
+export async function createRoomViaAPI(page: Page, roomData: unknown) {
   const response = await page.request.post('https://automationintesting.online/room/', {
     data: roomData
   });
@@ -236,7 +236,7 @@ export async function getMessagesViaAPI(page: Page) {
   return response.json();
 }
 
-export async function createMessageViaAPI(page: Page, messageData: any) {
+export async function createMessageViaAPI(page: Page, messageData: unknown) {
   const response = await page.request.post('https://automationintesting.online/message/', {
     data: messageData
   });

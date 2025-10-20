@@ -16,10 +16,10 @@ export class HtmlHelper {
     ansiToHtml(text: string): string {
         // Simple ANSI to HTML conversion
         return text
-            .replace(/\x1b\[31m/g, '<span style="color: red;">')
-            .replace(/\x1b\[32m/g, '<span style="color: green;">')
-            .replace(/\x1b\[33m/g, '<span style="color: yellow;">')
-            .replace(/\x1b\[0m/g, '</span>')
+            .replace(/\u001b\[31m/g, '<span style="color: red;">')
+            .replace(/\u001b\[32m/g, '<span style="color: green;">')
+            .replace(/\u001b\[33m/g, '<span style="color: yellow;">')
+            .replace(/\u001b\[0m/g, '</span>')
             .replace(/\n/g, '<br>');
     }
 }
@@ -44,17 +44,17 @@ export class FileHelper {
         }
     }
 
-    copyVideo(result: any, folderTest: string): string {
-        const videoAttachment = result.attachments?.find((att: any) => att.name === 'video');
+    copyVideo(result: unknown, folderTest: string): string {
+        const videoAttachment = (result as { attachments?: unknown[] }).attachments?.find((att: unknown) => (att as { name?: string }).name === 'video');
         if (videoAttachment?.path) {
             return this.copyFileToResults(folderTest, videoAttachment.path);
         }
         return '';
     }
 
-    copyScreenshots(result: any, folderTest: string): string[] {
-        const screenshotAttachments = result.attachments?.filter((att: any) => att.name === 'screenshot') || [];
-        return screenshotAttachments.map((att: any) => this.copyFileToResults(folderTest, att.path)).filter(Boolean);
+    copyScreenshots(result: unknown, folderTest: string): string[] {
+        const screenshotAttachments = (result as { attachments?: unknown[] }).attachments?.filter((att: unknown) => (att as { name?: string }).name === 'screenshot') || [];
+        return screenshotAttachments.map((att: unknown) => this.copyFileToResults(folderTest, (att as { path?: string }).path || '')).filter(Boolean);
     }
 }
 

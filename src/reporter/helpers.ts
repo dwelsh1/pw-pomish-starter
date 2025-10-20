@@ -28,7 +28,7 @@ export class FileHelper {
     private folderResults = 'steps-report';
 
     copyFileToResults(folderTest: string, sourcePath: string): string {
-        if (!sourcePath || !fs.existsSync(sourcePath)) {
+        if (!sourcePath || sourcePath.trim() === '' || !fs.existsSync(sourcePath)) {
             return '';
         }
         

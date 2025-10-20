@@ -7,114 +7,10 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    
-    - name: Run Playwright tests with Ortoni reporter
-      run: npm run test:ortoni
-    
-    - name: Upload Ortoni Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: ortoni-report-${{ github.run_number }}
-        path: ortoni-report/
-        retention-days: 30
-    
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ github.run_number }}
-        path: test-results/
-        retention-days: 30
-
-  test-allure:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    
-    - name: Run Playwright tests with Allure reporter
-      run: npm run test:allure
-    
-    - name: Generate Allure Report
-      run: npm run allure:generate
-    
-    - name: Upload Allure Results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: allure-results-${{ github.run_number }}
-        path: allure-results/
-        retention-days: 30
-    
-    - name: Upload Allure Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: allure-report-${{ github.run_number }}
-        path: allure-report/
-        retention-days: 30
-
-  test-steps:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    
-    - name: Run Playwright tests with Custom Steps reporter
-      run: npm run test:steps
-    
-    - name: Upload Custom Steps Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: steps-report-${{ github.run_number }}
-        path: steps-report/
-        retention-days: 30
-
+  # Fast linting job that runs first
   lint-and-typecheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     
     steps:
     - uses: actions/checkout@v4
@@ -132,3 +28,140 @@ jobs:
     
     - name: Run TypeScript type check
       run: npm run typecheck
+
+  # Optimized test jobs with sharding and parallel execution
+  test-ortoni:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    
+    strategy:
+      matrix:
+        shard: [1, 2, 3]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    
+    - name: Run Playwright tests with Ortoni reporter (shard ${{ matrix.shard }}/3)
+      run: npx playwright test --shard=${{ matrix.shard }}/3 --reporter=ortoni-report
+    
+    - name: Upload Ortoni Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ortoni-report-shard-${{ matrix.shard }}-${{ github.run_number }}
+        path: ortoni-report/
+        retention-days: 30
+
+  test-allure:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    
+    strategy:
+      matrix:
+        shard: [1, 2, 3]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    
+    - name: Run Playwright tests with Allure reporter (shard ${{ matrix.shard }}/3)
+      run: npx playwright test --shard=${{ matrix.shard }}/3 --reporter=allure-playwright
+    
+    - name: Upload Allure Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: allure-results-shard-${{ matrix.shard }}-${{ github.run_number }}
+        path: allure-results/
+        retention-days: 30
+
+  test-steps:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    
+    strategy:
+      matrix:
+        shard: [1, 2, 3]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    
+    - name: Run Playwright tests with Custom Steps reporter (shard ${{ matrix.shard }}/3)
+      run: npx playwright test --shard=${{ matrix.shard }}/3 --reporter=./src/reporter/StepReporter.ts
+    
+    - name: Upload Custom Steps Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: steps-report-shard-${{ matrix.shard }}-${{ github.run_number }}
+        path: steps-report/
+        retention-days: 30
+
+  # Generate final reports after all shards complete
+  generate-reports:
+    runs-on: ubuntu-latest
+    needs: [test-ortoni, test-allure, test-steps]
+    if: always()
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Download Allure Results
+      uses: actions/download-artifact@v4
+      with:
+        pattern: allure-results-shard-*-${{ github.run_number }}
+        merge-multiple: true
+    
+    - name: Generate Final Allure Report
+      run: npm run allure:generate
+    
+    - name: Upload Final Allure Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: allure-report-final-${{ github.run_number }}
+        path: allure-report/
+        retention-days: 30

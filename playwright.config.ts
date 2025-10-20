@@ -62,18 +62,20 @@ const getReporters = () => {
 export default defineConfig({
   testDir: 'tests',
   fullyParallel: true,
-  retries: process.env.CI ? 2 : 0,
-  timeout: 60000, // Increase test timeout to 60 seconds
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0, // Reduced retries for faster CI
+  workers: process.env.CI ? 2 : undefined, // Increased workers for faster CI
+  timeout: process.env.CI ? 30000 : 60000, // Reduced timeout in CI for faster failure detection
   reporter: getReporters(),
   // Global setup to block ads
   // globalSetup: require.resolve('./src/fixtures/global-setup.ts'),
   use: {
     baseURL: RBP_BASE_URL,
-    trace: 'retain-on-failure',
-    video: 'retain-on-failure',
+    trace: process.env.CI ? 'off' : 'retain-on-failure', // Disable trace in CI for speed
+    video: process.env.CI ? 'off' : 'retain-on-failure', // Disable video in CI for speed
     screenshot: 'only-on-failure',
-    actionTimeout: 15000, // Increase action timeout
-    navigationTimeout: 30000, // Increase navigation timeout
+    actionTimeout: process.env.CI ? 10000 : 15000, // Reduced timeout in CI
+    navigationTimeout: process.env.CI ? 20000 : 30000, // Reduced timeout in CI
     headless: true,
     // Block ads and unnecessary resources
     extraHTTPHeaders: {

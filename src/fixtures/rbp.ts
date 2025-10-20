@@ -98,8 +98,8 @@ type RBPHelpers = {
 };
 
 // Create a simple fixture without complex typing
-export const test = base.extend({
-  rbp: async ({ page }: { page: Page }, use: unknown) => {
+export const test = base.extend<{ rbp: RBPHelpers }>({
+  rbp: async ({ page }: { page: Page }, use: (helpers: RBPHelpers) => Promise<void>) => {
     const rbpHelpers: RBPHelpers = {
       auth: {
         loginAsAdmin: () => loginAsAdmin(page),

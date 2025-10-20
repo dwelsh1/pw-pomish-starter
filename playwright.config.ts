@@ -32,8 +32,8 @@ const reportConfig: OrtoniReportConfig = {
 };
 
 // Configure reporters based on REPORTER_TYPE
-const getReporters = () => {
-  const baseReporters = [
+const getReporters = (): any[] => {
+  const baseReporters: any[] = [
     ['html', { open: 'never', outputFolder: 'reports/html' }]
   ];
 

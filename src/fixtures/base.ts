@@ -1,41 +1,31 @@
 import { test as base } from '@playwright/test';
 import { 
-  registerUser, 
-  loginUser, 
-  logoutUser, 
-  deleteAccount,
-  addProductToCart,
-  goToCart,
-  proceedToCheckout,
+  loginAsAdmin,
+  logout,
+  navigateToRooms,
+  navigateToAdmin,
+  navigateToContact,
   submitContactForm,
-  subscribeToNewsletter,
-  navigateToProducts,
-  navigateToTestCases,
-  navigateToApiTesting
-} from '@helpers/automation';
+  generateRandomEmail,
+  generateRandomPhone
+} from '../helpers/rbp';
 
 type Helpers = {
-  user: {
-    register: (userData: unknown) => Promise<void>;
-    login: (email: string, password: string) => Promise<void>;
+  auth: {
+    loginAsAdmin: () => Promise<void>;
     logout: () => Promise<void>;
-    deleteAccount: () => Promise<void>;
-  };
-  products: {
-    addToCart: (productName?: string) => Promise<void>;
-    goToCart: () => Promise<void>;
-    proceedToCheckout: () => Promise<void>;
   };
   navigation: {
-    toProducts: () => Promise<void>;
-    toTestCases: () => Promise<void>;
-    toApiTesting: () => Promise<void>;
+    toRooms: () => Promise<void>;
+    toAdmin: () => Promise<void>;
+    toContact: () => Promise<void>;
   };
   contact: {
-    submitForm: (contactData: unknown) => Promise<void>;
+    submitForm: (contactData: any) => Promise<void>;
   };
-  newsletter: {
-    subscribe: (email: string) => Promise<void>;
+  utils: {
+    generateRandomEmail: () => Promise<string>;
+    generateRandomPhone: () => Promise<string>;
   };
 };
 
@@ -58,38 +48,32 @@ export const test = base.extend<Helpers>({
     
     await use(page);
   },
-  user: async ({ page }, use) => {
+
+  auth: async ({ page }, use) => {
     await use({
-      register: (userData) => registerUser(page, userData),
-      login: (email, password) => loginUser(page, email, password),
-      logout: () => logoutUser(page),
-      deleteAccount: () => deleteAccount(page),
+      loginAsAdmin: () => loginAsAdmin(page),
+      logout: () => logout(page),
     });
   },
-  products: async ({ page }, use) => {
-    await use({
-      addToCart: (productName) => addProductToCart(page, productName),
-      goToCart: () => goToCart(page),
-      proceedToCheckout: () => proceedToCheckout(page),
-    });
-  },
+
   navigation: async ({ page }, use) => {
     await use({
-      toProducts: () => navigateToProducts(page),
-      toTestCases: () => navigateToTestCases(page),
-      toApiTesting: () => navigateToApiTesting(page),
+      toRooms: () => navigateToRooms(page),
+      toAdmin: () => navigateToAdmin(page),
+      toContact: () => navigateToContact(page),
     });
   },
+
   contact: async ({ page }, use) => {
     await use({
-      submitForm: (contactData) => submitContactForm(page, contactData),
+      submitForm: (contactData: any) => submitContactForm(page, contactData),
     });
   },
-  newsletter: async ({ page }, use) => {
+
+  utils: async ({ page: _page }, use) => {
     await use({
-      subscribe: (email) => subscribeToNewsletter(page, email),
+      generateRandomEmail: () => generateRandomEmail(),
+      generateRandomPhone: () => generateRandomPhone(),
     });
   },
 });
-
-export { expect } from '@playwright/test';

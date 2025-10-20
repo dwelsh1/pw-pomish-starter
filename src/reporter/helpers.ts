@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as ejs from 'ejs';
 
 export class HtmlHelper {
-    async replaceTags(templateFile: string, objectToReplace: unknown, folderTest: string, fileName: string) {
+    async replaceTags(templateFile: string, objectToReplace: any, folderTest: string, fileName: string) {
         const templatePath = path.join(__dirname, 'templates', templateFile);
         const template = fs.readFileSync(templatePath, 'utf8');
         const htmlContent = ejs.render(template, objectToReplace);
@@ -29,7 +29,7 @@ export class HtmlHelper {
 }
 
 export class FileHelper {
-    private folderResults = 'steps-report';
+    public folderResults = 'steps-report';
 
     copyFileToResults(folderTest: string, sourcePath: string): string {
         if (!sourcePath || sourcePath.trim() === '' || !fs.existsSync(sourcePath)) {
@@ -49,7 +49,7 @@ export class FileHelper {
     }
 
     copyVideo(result: unknown, folderTest: string): string {
-        const videoAttachment = (result as { attachments?: unknown[] }).attachments?.find((att: unknown) => (att as { name?: string }).name === 'video');
+        const videoAttachment = (result as { attachments?: any[] }).attachments?.find((att: any) => att.name === 'video');
         if (videoAttachment?.path) {
             return this.copyFileToResults(folderTest, videoAttachment.path);
         }
@@ -57,8 +57,8 @@ export class FileHelper {
     }
 
     copyScreenshots(result: unknown, folderTest: string): string[] {
-        const screenshotAttachments = (result as { attachments?: unknown[] }).attachments?.filter((att: unknown) => (att as { name?: string }).name === 'screenshot') || [];
-        return screenshotAttachments.map((att: unknown) => this.copyFileToResults(folderTest, (att as { path?: string }).path || '')).filter(Boolean);
+        const screenshotAttachments = (result as { attachments?: any[] }).attachments?.filter((att: any) => att.name === 'screenshot') || [];
+        return screenshotAttachments.map((att: any) => this.copyFileToResults(folderTest, att.path || '')).filter(Boolean);
     }
 }
 

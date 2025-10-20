@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation links updated to point to `docs/` folder
 - Test configuration optimized for three-browser setup
 
-## [0.1.0] - 2024-10-20
+## [0.1.0] - 2025-01-20
 
 ### Added
 - Initial Playwright TypeScript testing framework

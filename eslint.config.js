@@ -24,6 +24,7 @@ module.exports = [
         exports: 'readonly',
         global: 'readonly',
         console: 'readonly',
+        NodeJS: 'readonly',
       },
     },
     plugins: {

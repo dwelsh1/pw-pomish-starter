@@ -4,11 +4,6 @@ import * as os from 'os';
 
 // Node.js globals
 declare const process: NodeJS.Process;
-declare namespace NodeJS {
-  interface Process {
-    env: NodeJS.ProcessEnv;
-  }
-}
 
 // Restful Booker Platform
 const RBP_BASE_URL = process.env.RBP_BASE_URL || 'https://automationintesting.online';

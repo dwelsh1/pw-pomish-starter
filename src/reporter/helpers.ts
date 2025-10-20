@@ -15,11 +15,14 @@ export class HtmlHelper {
 
     ansiToHtml(text: string): string {
         // Simple ANSI to HTML conversion - using Unicode escape sequences
-        // eslint-disable-next-line no-control-regex
         return text
+            // eslint-disable-next-line no-control-regex
             .replace(/\u001b\[31m/g, '<span style="color: red;">')
+            // eslint-disable-next-line no-control-regex
             .replace(/\u001b\[32m/g, '<span style="color: green;">')
+            // eslint-disable-next-line no-control-regex
             .replace(/\u001b\[33m/g, '<span style="color: yellow;">')
+            // eslint-disable-next-line no-control-regex
             .replace(/\u001b\[0m/g, '</span>')
             .replace(/\n/g, '<br>');
     }

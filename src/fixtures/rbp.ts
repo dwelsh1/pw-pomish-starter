@@ -72,22 +72,22 @@ type RBPHelpers = {
   };
   booking: {
     create: (bookingData: BookingData) => Promise<void>;
-    getById: (bookingId: string) => Promise<any>;
-    createViaAPI: (bookingData: any) => Promise<any>;
-    updateViaAPI: (bookingId: string, bookingData: any) => Promise<any>;
+    getById: (bookingId: string) => Promise<unknown>;
+    createViaAPI: (bookingData: unknown) => Promise<unknown>;
+    updateViaAPI: (bookingId: string, bookingData: unknown) => Promise<unknown>;
     deleteViaAPI: (bookingId: string) => Promise<number>;
   };
   room: {
     create: (roomData: RoomData) => Promise<void>;
-    getAllViaAPI: () => Promise<any>;
-    createViaAPI: (roomData: any) => Promise<any>;
+    getAllViaAPI: () => Promise<unknown>;
+    createViaAPI: (roomData: unknown) => Promise<unknown>;
   };
   contact: {
     submitForm: (contactData: ContactData) => Promise<void>;
   };
   message: {
-    getAllViaAPI: () => Promise<any>;
-    createViaAPI: (messageData: MessageData) => Promise<any>;
+    getAllViaAPI: () => Promise<unknown>;
+    createViaAPI: (messageData: MessageData) => Promise<unknown>;
   };
   utils: {
     getCurrentDate: () => Promise<string>;

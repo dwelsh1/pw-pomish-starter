@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 import { OrtoniReportConfig } from 'ortoni-report';
 import * as os from 'os';
 
+// Node.js globals
+declare const process: NodeJS.Process;
+
 // Restful Booker Platform
 const RBP_BASE_URL = process.env.RBP_BASE_URL || 'https://automationintesting.online';
 

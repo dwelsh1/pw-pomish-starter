@@ -16,7 +16,7 @@ import {
 
 type Helpers = {
   user: {
-    register: (userData: any) => Promise<void>;
+    register: (userData: unknown) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     deleteAccount: () => Promise<void>;
@@ -32,7 +32,7 @@ type Helpers = {
     toApiTesting: () => Promise<void>;
   };
   contact: {
-    submitForm: (contactData: any) => Promise<void>;
+    submitForm: (contactData: unknown) => Promise<void>;
   };
   newsletter: {
     subscribe: (email: string) => Promise<void>;

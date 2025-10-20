@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = {
   // Allure configuration
   resultsDir: 'allure-results',

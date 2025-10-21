@@ -1,6 +1,6 @@
 # Documentation Overview
 
-This project includes comprehensive documentation for all three reporting systems and detailed guides for running tests. Here's what's available:
+This project includes comprehensive documentation for all four reporting systems, dual visual testing methods, and detailed guides for running tests. Here's what's available:
 
 ## 📚 Main Documentation
 
@@ -42,6 +42,26 @@ This project includes comprehensive documentation for all three reporting system
 - Template customization
 - Advanced features and integration
 
+### **[MONOCART_SETUP.md](./MONOCART_SETUP.md)**
+- Monocart Reporter setup and advanced features
+- High-performance tree grid reporting
+- Ultra-fast filtering and sorting capabilities
+- Customization and extensibility options
+- Shard merging and large test suite handling
+
+### **[APPLITOOLS_SETUP.md](./APPLITOOLS_SETUP.md)**
+- Applitools visual testing setup and advanced features
+- AI-powered visual comparison capabilities
+- Fixtures-based integration approach
+- Cross-browser visual testing
+- Cloud-based baseline management
+
+### **[VISUAL_FAILURE_DEMO.md](./VISUAL_FAILURE_DEMO.md)**
+- Comprehensive comparison of Playwright vs Applitools visual testing
+- Real-world failure demonstration with both systems
+- Detailed analysis of failure reporting differences
+- When to use each visual testing method
+
 ## 🎯 Quick Reference
 
 ### Test Execution Commands
@@ -50,16 +70,28 @@ This project includes comprehensive documentation for all three reporting system
 npm run test:ortoni    # Ortoni Report
 npm run test:allure    # Allure Report
 npm run test:steps     # Custom Steps Report
+npm run test:monocart  # Monocart Report
 
 # Specific browsers
 npm run test:chromium  # Chrome only
 npm run test:edge      # Edge only
 npm run test:webkit    # Safari only
 
+# Applitools browser-specific
+npm run test:applitools:chromium  # Applitools Chrome
+npm run test:applitools:edge      # Applitools Edge
+npm run test:applitools:webkit    # Applitools Safari
+
 # Test types
 npm run test:e2e      # E2E tests
 npm run test:api      # API tests
-npm run test:visual   # Visual tests
+npm run test:visual   # Playwright visual tests
+npm run test:visual:applitools  # Applitools visual tests
+npm run test:visual:all         # Both visual methods
+
+# Visual failure demonstration
+npx playwright test tests/visual/visual-failure-demo.spec.ts --grep "should fail due to contact form H1 color change"
+npm run test:applitools:chromium -- tests/visual/applitools/applitools-failure-demo.spec.ts
 ```
 
 ### Report Viewing Commands

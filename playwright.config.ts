@@ -97,10 +97,6 @@ export default defineConfig({
     extraHTTPHeaders: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     },
-    // pw-api-plugin configuration
-    LOG_API_UI,
-    LOG_API_REPORT,
-    COLOR_SCHEME,
   },
   expect: {
     timeout: 5_000,
@@ -179,6 +175,34 @@ export default defineConfig({
       { 
         name: 'rbp-visual-webkit', 
         testDir: 'tests/visual',
+        use: { 
+          ...devices['Desktop Safari'],
+          baseURL: RBP_BASE_URL
+        } 
+      },
+    ]),
+
+    // Applitools visual tests (skip in CI to avoid API limits)
+    ...(process.env.CI ? [] : [
+      { 
+        name: 'rbp-applitools-chromium', 
+        testDir: 'tests/visual/applitools',
+        use: { 
+          ...devices['Desktop Chrome'],
+          baseURL: RBP_BASE_URL
+        } 
+      },
+      { 
+        name: 'rbp-applitools-edge', 
+        testDir: 'tests/visual/applitools',
+        use: { 
+          ...devices['Desktop Edge'],
+          baseURL: RBP_BASE_URL
+        } 
+      },
+      { 
+        name: 'rbp-applitools-webkit', 
+        testDir: 'tests/visual/applitools',
         use: { 
           ...devices['Desktop Safari'],
           baseURL: RBP_BASE_URL

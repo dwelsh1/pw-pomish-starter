@@ -5,9 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-01-27
+
+### Added
+- **Visual Failure Demonstration**: Comprehensive comparison between Playwright and Applitools visual testing
+- **Visual Failure Test Files**: 
+  - `tests/visual/visual-failure-demo.spec.ts` - Playwright visual failure demonstration
+  - `tests/visual/applitools/applitools-failure-demo.spec.ts` - Applitools visual failure demonstration
+- **Enhanced Documentation**: Updated all `.md` files with visual failure demo commands and instructions
+- **Visual Testing Comparison Guide**: `docs/VISUAL_FAILURE_DEMO.md` with detailed analysis of both approaches
+- **Quick Start Commands**: Added visual failure demo commands to README and documentation
+- **Cross-Platform Visual Testing**: Demonstrates pixel-perfect vs AI-powered visual comparison
+
+### Changed
+- **README.md**: Added visual failure demonstration commands to Quick Start section
+- **docs/RUNNING_TESTS.md**: Enhanced Visual Tests section with failure demo commands
+- **docs/APPLITOOLS_SETUP.md**: Added visual failure demonstration section with cross-references
+- **docs/DOCUMENTATION.md**: Updated Quick Reference with visual failure demo commands
+- **Documentation Structure**: Improved cross-referencing between related documentation files
+
+### Fixed
+- **Visual Test Reporting**: Clear demonstration of how Playwright HTML reports show visual differences
+- **Applitools Integration**: Proper error handling and dashboard URL reporting for visual failures
+- **Documentation Consistency**: Unified command structure across all documentation files
+
 ## [Unreleased]
 
 ### Added
+- **Applitools Visual Testing**: AI-powered visual testing with Applitools Eyes integration
+- **Dual Visual Testing**: Easy switching between Playwright screenshots and Applitools comparison
+- **Applitools Fixtures**: Custom fixtures for seamless Applitools integration
+- **Applitools Test Projects**: Separate test projects for Chrome, Edge, and Safari
+- **Applitools Scripts**: New npm scripts for Applitools testing and browser-specific runs
+- **Applitools Documentation**: Comprehensive guide in `docs/APPLITOOLS_SETUP.md`
 - **Monocart Reporter**: High-performance tree grid reporter for large test suites
 - **Four Reporter System**: Easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
 - **Enhanced API Testing**: pw-api-plugin for beautiful API visualization and debugging

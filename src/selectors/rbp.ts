@@ -6,7 +6,7 @@ export const restfulBooker = (page: Page) => {
   const homeLink: Locator = page.locator('nav').getByRole('link', { name: 'Home' });
   const roomsLink: Locator = page.locator('nav').getByRole('link', { name: 'Rooms' });
   const adminLink: Locator = page.locator('nav').getByRole('link', { name: 'Admin' });
-  const contactLink: Locator = page.locator('nav').getByRole('link', { name: 'Contact' });
+  const contactLink: Locator = page.locator('nav').getByRole('link', { name: 'Contact999' });
   const reportLink: Locator = page.locator('nav').getByRole('link', { name: 'Report' });
 
   // Authentication elements

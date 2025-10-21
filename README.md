@@ -17,7 +17,7 @@ A comprehensive Playwright + TypeScript starter that targets the **Restful Booke
 
 - **UI tests** with a **POM‑ish** approach (central selectors + tiny helpers, no bloated page classes)
 - **Enhanced API tests** with pw-api-plugin for beautiful visualization and playwright-schema-validator for contract validation
-- **Visual snapshots** using Playwright's built‑in `toHaveScreenshot`
+- **Dual visual testing** with both Playwright screenshots and Applitools AI-powered comparison
 - **Four powerful reporting systems** with easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
 - **Multi-browser testing** on Chrome, Edge, Safari, and mobile browsers
 
@@ -35,6 +35,15 @@ npm run test:ortoni    # Ortoni Report
 npm run test:allure    # Allure Report
 npm run test:steps     # Custom Steps Report
 npm run test:monocart  # Monocart Report
+
+# Visual testing options
+npm run test:visual           # Playwright screenshots
+npm run test:visual:applitools # Applitools AI comparison
+npm run test:visual:all       # Both visual methods
+
+# Visual failure demonstration
+npx playwright test tests/visual/visual-failure-demo.spec.ts --grep "should fail due to contact form H1 color change"
+npm run test:applitools:chromium -- tests/visual/applitools/applitools-failure-demo.spec.ts
 
 # UI mode for test development
 npm run test:ui
@@ -71,10 +80,27 @@ npm run test:monocart
 npm run monocart:open
 ```
 
+### Reporter Commands Summary
+| Reporter | Run Tests | Open Report |
+|----------|-----------|-------------|
+| **Ortoni** | `npm run test:ortoni` | `npm run show-ortoni-report` |
+| **Allure** | `npm run test:allure` | `npm run allure:serve` |
+| **Steps** | `npm run test:steps` | `npm run steps:open` |
+| **Monocart** | `npm run test:monocart` | `npm run monocart:open` |
+
+### Visual Testing Commands Summary
+| Testing Method | Run Tests | Browser-Specific |
+|----------------|-----------|------------------|
+| **Playwright Screenshots** | `npm run test:visual` | `npm run test:chromium`<br>`npm run test:edge`<br>`npm run test:webkit` |
+| **Applitools AI Comparison** | `npm run test:visual:applitools` | `npm run test:applitools:chromium`<br>`npm run test:applitools:edge`<br>`npm run test:applitools:webkit` |
+| **Both Methods** | `npm run test:visual:all` | Run both Playwright and Applitools |
+
 ## 📚 Documentation
 
 - **[docs/RUNNING_TESTS.md](./docs/RUNNING_TESTS.md)** - Comprehensive guide to running tests and generating reports
 - **[docs/API_PLUGINS.md](./docs/API_PLUGINS.md)** - Enhanced API testing with pw-api-plugin and schema validation
+- **[docs/APPLITOOLS_SETUP.md](./docs/APPLITOOLS_SETUP.md)** - Applitools visual testing setup and advanced features
+- **[docs/VISUAL_FAILURE_DEMO.md](./docs/VISUAL_FAILURE_DEMO.md)** - Comprehensive comparison of Playwright vs Applitools visual testing
 - **[docs/ORTONI_SETUP.md](./docs/ORTONI_SETUP.md)** - Ortoni Report configuration and usage
 - **[docs/ALLURE_SETUP.md](./docs/ALLURE_SETUP.md)** - Allure Report setup and advanced features
 - **[docs/STEPS_SETUP.md](./docs/STEPS_SETUP.md)** - Custom Steps Reporter documentation
@@ -98,7 +124,9 @@ npm run monocart:open
 - `npm run test:api:report` - API tests with HTML report details
 - `npm run test:api:dark` - API tests with dark theme
 - `npm run test:api:accessible` - API tests with accessible theme
-- `npm run test:visual` - Visual tests only
+- `npm run test:visual` - Playwright visual tests only
+- `npm run test:visual:applitools` - Applitools visual tests only
+- `npm run test:visual:all` - Both visual testing methods
 - `npm run test:all` - Run all configured tests
 
 ### Browser-Specific Testing
@@ -106,6 +134,9 @@ npm run monocart:open
 - `npm run test:edge` - Edge browser only
 - `npm run test:webkit` - Safari browser only
 - `npm run test:mobile` - Mobile browsers (Chrome & Safari)
+- `npm run test:applitools:chromium` - Applitools tests on Chrome
+- `npm run test:applitools:edge` - Applitools tests on Edge
+- `npm run test:applitools:webkit` - Applitools tests on Safari
 
 ### Development & Debugging
 - `npm run test:ui` - Interactive Playwright UI

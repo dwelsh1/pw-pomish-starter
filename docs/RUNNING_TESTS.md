@@ -1,6 +1,6 @@
 # Running Tests & Getting Reports
 
-This comprehensive guide covers everything you need to know about running Playwright tests and generating reports with the three available reporting systems.
+This comprehensive guide covers everything you need to know about running Playwright tests and generating reports with the four available reporting systems.
 
 ## Table of Contents
 
@@ -25,6 +25,7 @@ npm test
 npm run test:ortoni    # Ortoni Report
 npm run test:allure    # Allure Report  
 npm run test:steps     # Custom Steps Report
+npm run test:monocart  # Monocart Report
 ```
 
 ### View Reports
@@ -32,7 +33,23 @@ npm run test:steps     # Custom Steps Report
 npm run show-ortoni-report  # Ortoni
 npm run allure:serve        # Allure
 npm run steps:open          # Custom Steps
+npm run monocart:open       # Monocart
 ```
+
+### Reporter Commands Summary
+| Reporter | Run Tests | Open Report |
+|----------|-----------|-------------|
+| **Ortoni** | `npm run test:ortoni` | `npm run show-ortoni-report` |
+| **Allure** | `npm run test:allure` | `npm run allure:serve` |
+| **Steps** | `npm run test:steps` | `npm run steps:open` |
+| **Monocart** | `npm run test:monocart` | `npm run monocart:open` |
+
+### Visual Testing Commands Summary
+| Testing Method | Run Tests | Browser-Specific |
+|----------------|-----------|------------------|
+| **Playwright Screenshots** | `npm run test:visual` | `npm run test:chromium`<br>`npm run test:edge`<br>`npm run test:webkit` |
+| **Applitools AI Comparison** | `npm run test:visual:applitools` | `npm run test:applitools:chromium`<br>`npm run test:applitools:edge`<br>`npm run test:applitools:webkit` |
+| **Both Methods** | `npm run test:visual:all` | Run both Playwright and Applitools |
 
 ## Available Browsers
 
@@ -45,6 +62,14 @@ Your project is configured to test on **3 desktop browsers** and **2 mobile brow
 | **Safari** | `rbp-webkit` | `npm run test:webkit` |
 | **Mobile Chrome** | `rbp-mobile-chrome` | `npm run test:mobile` |
 | **Mobile Safari** | `rbp-mobile-safari` | `npm run test:mobile` |
+
+### Applitools Visual Testing Projects
+
+| Browser | Project Name | Command |
+|---------|--------------|---------|
+| **Chrome** | `rbp-applitools-chromium` | `npm run test:applitools:chromium` |
+| **Edge** | `rbp-applitools-edge` | `npm run test:applitools:edge` |
+| **Safari** | `rbp-applitools-webkit` | `npm run test:applitools:webkit` |
 
 ## Running Tests
 
@@ -78,7 +103,24 @@ npm run test:api            # API tests only
 
 #### Visual Tests Only
 ```bash
-npm run test:visual         # Visual tests on all browsers
+npm run test:visual         # Playwright visual tests on all browsers
+npm run test:visual:applitools # Applitools visual tests on all browsers
+npm run test:visual:all     # Both Playwright and Applitools visual tests
+```
+
+#### Visual Failure Demonstration
+```bash
+# Playwright visual failure test (shows pixel-perfect comparison)
+npx playwright test tests/visual/visual-failure-demo.spec.ts --grep "should fail due to contact form H1 color change"
+
+# Applitools visual failure test (shows AI-powered comparison)
+npm run test:applitools:chromium -- tests/visual/applitools/applitools-failure-demo.spec.ts
+
+# View Playwright visual results
+npx playwright show-report
+
+# View Applitools results
+# Check console output for Applitools dashboard URL
 ```
 
 ### 3. Running Tests by Browser

@@ -18,12 +18,87 @@
             font-family: 'Roboto', sans-serif;
             background-color: #f5f5f5;
             color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* App Layout */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #bdc3c7;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .nav-item .material-symbols-outlined {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         .header {
@@ -173,7 +248,36 @@
             color: #f39c12;
         }
 
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1001;
+                background: #2c3e50;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            
             .charts-container {
                 grid-template-columns: 1fr;
             }
@@ -182,74 +286,437 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        /* Test Detail Styles */
+        .test-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #2980b9;
+        }
+
+        .back-button .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        #test-detail-body {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                <span class="material-symbols-outlined status-icon status <%= results.status %>">
-                    <%= results.statusIcon %>
-                </span>
-                Playwright Test Steps Report
-            </h1>
-            <p><strong>Duration:</strong> <%= results.duration %></p>
-            <p><strong>Generated:</strong> <%= new Date().toLocaleString() %></p>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Steps Reporter</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('tests')">
+                    <span class="material-symbols-outlined">list</span>
+                    Tests
+                </a>
+            </nav>
         </div>
 
-        <div class="summary-stats">
-            <div class="stat-card total">
-                <h3>Total Tests</h3>
-                <div class="number"><%= results.total %></div>
-            </div>
-            <div class="stat-card passed">
-                <h3>Passed</h3>
-                <div class="number"><%= results.totalPassed %></div>
-            </div>
-            <div class="stat-card failed">
-                <h3>Failed</h3>
-                <div class="number"><%= results.totalFailed %></div>
-            </div>
-            <div class="stat-card skipped">
-                <h3>Skipped</h3>
-                <div class="number"><%= results.totalSkipped %></div>
-            </div>
-        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Dashboard Section -->
+                <div id="dashboard-content" class="content-section active">
+                    <div class="header">
+                        <h1>
+                            Playwright Test Steps Report
+                        </h1>
+                        <p><strong>Duration:</strong> <%= results.duration %></p>
+                        <p><strong>Generated:</strong> <%= new Date().toLocaleString() %></p>
+                    </div>
 
-        <div class="charts-container">
-            <div class="chart-card">
-                <h3>Test Results Distribution</h3>
-                <div id="pieChart"></div>
-            </div>
-            <div class="chart-card">
-                <h3>Top 10 Longest Tests</h3>
-                <div id="barChart"></div>
-            </div>
-        </div>
+                    <div class="summary-stats">
+                        <div class="stat-card total">
+                            <h3>Total Tests</h3>
+                            <div class="number"><%= results.total %></div>
+                        </div>
+                        <div class="stat-card passed">
+                            <h3>Passed</h3>
+                            <div class="number"><%= results.totalPassed %></div>
+                        </div>
+                        <div class="stat-card failed">
+                            <h3>Failed</h3>
+                            <div class="number"><%= results.totalFailed %></div>
+                        </div>
+                        <div class="stat-card skipped">
+                            <h3>Skipped</h3>
+                            <div class="number"><%= results.totalSkipped %></div>
+                        </div>
+                    </div>
 
-        <div class="test-groups">
-            <h2>Test Results by File</h2>
-            <% Object.keys(results.groupedResults).forEach(function(fileName) { %>
-                <div class="test-group">
-                    <h4><%= fileName %></h4>
-                    <ul class="test-list">
-                        <% results.groupedResults[fileName].forEach(function(test) { %>
-                            <li class="test-item">
-                                <span class="material-symbols-outlined status <%= test.status %>">
-                                    <%= test.statusIcon %>
-                                </span>
-                                <a href="<%= test.num %>/index.html"><%= test.title %></a>
-                                <span class="test-status <%= test.status %>"><%= test.status %></span>
-                                <span style="color: #7f8c8d; font-size: 0.9rem;"><%= test.duration %></span>
-                            </li>
-                        <% }); %>
-                    </ul>
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>Test Results Distribution</h3>
+                            <div id="pieChart"></div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Top 10 Longest Tests</h3>
+                            <div id="barChart"></div>
+                        </div>
+                    </div>
                 </div>
-            <% }); %>
+
+                <!-- Tests Section -->
+                <div id="tests-content" class="content-section">
+                    <div class="test-groups">
+                        <h2>Test Results by File</h2>
+                        <% Object.keys(results.groupedResults).forEach(function(fileName) { %>
+                            <div class="test-group">
+                                <h4><%= fileName %></h4>
+                                <ul class="test-list">
+                                    <% results.groupedResults[fileName].forEach(function(test) { %>
+                                        <li class="test-item">
+                                            <span class="material-symbols-outlined status <%= test.status %>">
+                                                <%= test.statusIcon %>
+                                            </span>
+                                            <a href="#" onclick="showTestDetail('<%= test.num %>')"><%= test.title %></a>
+                                            <span class="test-status <%= test.status %>"><%= test.status %></span>
+                                            <span style="color: #7f8c8d; font-size: 0.9rem;"><%= test.duration %></span>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <!-- Test Detail Section -->
+                <div id="test-detail-content" class="content-section">
+                    <div class="test-detail-header">
+                        <button onclick="showSection('tests')" class="back-button">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back to Tests
+                        </button>
+                        <h2 id="test-detail-title">Test Details</h2>
+                    </div>
+                    <div id="test-detail-body">
+                        <!-- Test details will be loaded here -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Global object to store prompt data for all tests
+        window.testPrompts = {
+            <% Object.keys(results.groupedResults).forEach(function(fileName) { %>
+                <% results.groupedResults[fileName].forEach(function(test) { %>
+                    <% if (test.status === 'failed' && test.prompts) { %>
+                        '<%= test.num %>': {
+                            full: `<%= test.prompts.full.replace(/`/g, '\\`').replace(/\$/g, '\\$') %>`,
+                            quick: `<%= test.prompts.quick.replace(/`/g, '\\`').replace(/\$/g, '\\$') %>`,
+                            debug: `<%= test.prompts.debug.replace(/`/g, '\\`').replace(/\$/g, '\\$') %>`
+                        },
+                    <% } %>
+                <% }); %>
+            <% }); %>
+        };
+
+        // Sidebar Navigation Functions
+        function showSection(sectionName) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-content').classList.add('active');
+            
+            // Update active navigation state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the clicked nav item
+            const activeNavItem = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+            
+            // Update URL hash
+            window.location.hash = sectionName;
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        // Test Detail Functions
+        function showTestDetail(testNum) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show test detail section
+            document.getElementById('test-detail-content').classList.add('active');
+            
+            // Update active navigation state - keep Tests active
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const testsNavItem = document.querySelector(`[onclick="showSection('tests')"]`);
+            if (testsNavItem) {
+                testsNavItem.classList.add('active');
+            }
+            
+            // Load test detail content
+            loadTestDetail(testNum);
+            
+            // Update URL hash
+            window.location.hash = 'test-' + testNum;
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        function loadTestDetail(testNum) {
+            // Fetch the test detail HTML
+            fetch(testNum + '/index.html')
+                .then(response => response.text())
+                .then(html => {
+                    // Extract the main content from the test detail page
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Get the main content (skip header and navigation)
+                    const mainContent = doc.querySelector('.container') || doc.body;
+                    
+                    // Update the test detail title
+                    const testTitle = doc.querySelector('h1')?.textContent || 'Test Details';
+                    document.getElementById('test-detail-title').textContent = testTitle;
+                    
+                    // Clean up the content - remove "Back to Summary" button and other navigation elements
+                    let cleanedContent = mainContent.innerHTML;
+                    
+                    // Remove "Back to Summary" button and similar navigation elements
+                    cleanedContent = cleanedContent.replace(/<a[^>]*href="[^"]*summary\.html"[^>]*>.*?<\/a>/gi, '');
+                    cleanedContent = cleanedContent.replace(/<button[^>]*onclick="[^"]*summary[^"]*"[^>]*>.*?<\/button>/gi, '');
+                    
+                    // Remove any navigation links that might interfere
+                    cleanedContent = cleanedContent.replace(/<a[^>]*href="[^"]*\/"[^>]*>.*?Back.*?<\/a>/gi, '');
+                    
+                    // Remove "Back to Summary" button more aggressively (multiline)
+                    cleanedContent = cleanedContent.replace(/<a[^>]*>[\s\S]*?Back to Summary[\s\S]*?<\/a>/gi, '');
+                    cleanedContent = cleanedContent.replace(/<button[^>]*>[\s\S]*?Back to Summary[\s\S]*?<\/button>/gi, '');
+                    
+                    // Remove back-link elements (the arrow button) - multiline
+                    cleanedContent = cleanedContent.replace(/<a[^>]*class="[^"]*back-link[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
+                    cleanedContent = cleanedContent.replace(/<a[^>]*class="[^"]*back[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
+                    
+                    // Remove specific back-link structure
+                    cleanedContent = cleanedContent.replace(/<a href="\.\.\/summary\.html" class="back-link">[\s\S]*?<\/a>/gi, '');
+                    
+                    // Remove any remaining "Back to Summary" text
+                    cleanedContent = cleanedContent.replace(/Back to Summary/gi, '');
+                    
+                    // Fix image and video paths to include the test folder
+                    cleanedContent = cleanedContent.replace(/src="([^"]*\.(png|jpg|jpeg|gif|webm|mp4))"/gi, `src="${testNum}/$1"`);
+                    cleanedContent = cleanedContent.replace(/href="([^"]*\.(png|jpg|jpeg|gif|webm|mp4))"/gi, `href="${testNum}/$1"`);
+                    
+                    // Fix Copy Prompt button onclick handlers (only if they exist)
+                    cleanedContent = cleanedContent.replace(/onclick="copyPrompt\(([^)]+)\)"/gi, `onclick="copyPromptFromTestDetail($1, '${testNum}')"`);
+                    
+                    // Check if this is a passing test with minimal content
+                    const testElement = doc.querySelector('.test');
+                    const hasContent = testElement && testElement.querySelectorAll('.section').length > 1;
+                    
+                    if (!hasContent) {
+                        // This is likely a passing test with minimal content
+                        // Add a message indicating it's a passing test
+                        cleanedContent = `
+                            <div class="test">
+                                <header style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px;">
+                                    <h1 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; font-size: 1.8rem;">
+                                        <span>✅ Test Passed</span>
+                                        <span style="font-size: 1rem; opacity: 0.9;">${testTitle}</span>
+                                    </h1>
+                                    <div class="test-details" style="display: flex; align-items: center; gap: 20px; font-size: 0.9rem;">
+                                        <span>Status: <strong>PASSED</strong></span>
+                                        <span>Browser: <strong>rbp-chromium</strong></span>
+                                    </div>
+                                </header>
+                                <section class="section" style="padding: 25px 30px;">
+                                    <h2 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.3rem;">
+                                        <span class="material-symbols-outlined">check_circle</span>
+                                        Test Completed Successfully
+                                    </h2>
+                                    <p style="line-height: 1.6; color: #555;">
+                                        This test passed without any issues. No errors, screenshots, or additional information is available.
+                                    </p>
+                                </section>
+                            </div>
+                        `;
+                    }
+                    
+                    // Update the test detail body with cleaned content
+                    document.getElementById('test-detail-body').innerHTML = cleanedContent;
+                    
+                    // Copy CSS styles from the test detail page to ensure proper formatting
+                    const testStyles = doc.querySelectorAll('style');
+                    testStyles.forEach(style => {
+                        if (!document.querySelector(`style[data-test-styles="${testNum}"]`)) {
+                            const newStyle = document.createElement('style');
+                            newStyle.setAttribute('data-test-styles', testNum);
+                            newStyle.textContent = style.textContent;
+                            document.head.appendChild(newStyle);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading test detail:', error);
+                    document.getElementById('test-detail-body').innerHTML = 
+                        '<p>Error loading test details. Please try again.</p>';
+                });
+        }
+
+        // Copy Prompt function for test details
+        function copyPromptFromTestDetail(promptType, testNum) {
+            // Get prompt data from the global prompts object
+            if (window.testPrompts && window.testPrompts[testNum] && window.testPrompts[testNum][promptType]) {
+                const promptData = window.testPrompts[testNum][promptType];
+                copyPromptToClipboard(promptData);
+            } else {
+                showNotification('Prompt data not found for this test.');
+            }
+        }
+        
+        function copyPromptToClipboard(promptData) {
+            if (promptData) {
+                // Copy to clipboard
+                navigator.clipboard.writeText(promptData).then(() => {
+                    // Show notification
+                    showNotification('Prompt copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy prompt:', err);
+                    showNotification('Failed to copy prompt. Please try again.');
+                });
+            } else {
+                showNotification('Prompt data not found.');
+            }
+        }
+
+        // Notification function
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #27ae60;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-family: 'Roboto', sans-serif;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Handle URL hash on page load
+        function handleHashOnLoad() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'dashboard' || hash === 'tests') {
+                showSection(hash);
+            } else if (hash.startsWith('test-')) {
+                const testNum = hash.substring(5); // Remove 'test-' prefix
+                showTestDetail(testNum);
+            } else {
+                showSection('dashboard'); // Default to dashboard
+            }
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'dashboard' || hash === 'tests') {
+                showSection(hash);
+            } else if (hash.startsWith('test-')) {
+                const testNum = hash.substring(5); // Remove 'test-' prefix
+                showTestDetail(testNum);
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            handleHashOnLoad();
+        });
+
+        // Close mobile sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !mobileMenuBtn.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
         // Prepare data for ApexCharts - Pie Chart
         var pieChartOptions = {
             chart: {

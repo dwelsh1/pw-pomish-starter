@@ -34,6 +34,11 @@ export interface TestResults {
     screenshotPaths?: string[];
     attachments?: { path: string; name: string }[];
     errors?: string[];
+    prompts?: {
+        full: string;
+        quick: string;
+        debug: string;
+    };
 }
 
 export interface TestSummary {

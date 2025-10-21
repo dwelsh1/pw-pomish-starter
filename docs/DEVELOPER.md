@@ -207,11 +207,304 @@ npm test -- --video=on
 npm test -- --timeout=30000
 ```
 
-## Reporting Systems
+## Steps Reporter Sidebar Enhancement
 
-This project supports **three different reporting systems** for comprehensive test result visualization:
+The Steps Reporter has been enhanced with a modern sidebar navigation system that transforms it from a multi-page application to a single-page application (SPA) with seamless navigation.
 
-### 1. Ortoni Reports (Default)
+### Architecture Changes
+
+#### 1. Single-Page Application Structure
+```html
+<div class="app-layout">
+    <div class="sidebar" id="sidebar">
+        <!-- Navigation items -->
+    </div>
+    <div class="main-content">
+        <div id="dashboard-content" class="content-section active">
+            <!-- Dashboard content -->
+        </div>
+        <div id="tests-content" class="content-section">
+            <!-- Tests list -->
+        </div>
+        <div id="test-detail-content" class="content-section">
+            <!-- Dynamic test details -->
+        </div>
+    </div>
+</div>
+```
+
+#### 2. Navigation Functions
+```javascript
+function showSection(sectionName) {
+    // Hide all content sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(sectionName + '-content').classList.add('active');
+    
+    // Update URL hash for browser navigation
+    window.location.hash = sectionName;
+}
+
+function showTestDetail(testNum) {
+    // Load test details dynamically
+    loadTestDetail(testNum);
+    showSection('test-detail');
+}
+```
+
+#### 3. Global Prompt Data Storage
+```javascript
+// Global object to store prompt data for all tests
+window.testPrompts = {
+    '23': {
+        full: "Complete prompt text...",
+        quick: "Quick analysis prompt...",
+        debug: "Debug help prompt..."
+    },
+    // ... other failed tests
+};
+```
+
+### Key Features
+
+- **Responsive Sidebar**: Mobile-friendly with collapsible navigation
+- **Hash-based Routing**: Browser back/forward support
+- **Dynamic Content Loading**: Test details load without page refresh
+- **Enhanced Copy Prompt**: Global data storage for seamless prompt access
+- **Media Path Correction**: Automatic path fixing for screenshots and videos
+
+## AI-Powered Copy Prompt Feature
+
+The Custom Steps Reporter includes an innovative **Copy Prompt** feature that generates AI-friendly prompts for failed tests, making it easy to get debugging assistance from AI tools like Cursor, ChatGPT, or Claude.
+
+### How It Works
+
+When a test fails, the reporter automatically generates three types of prompts:
+
+1. **Full Prompt** - Comprehensive analysis with all test context
+2. **Quick Analysis** - Fast debugging with essential error information  
+3. **Debug Help** - Step-by-step debugging guidance
+
+### Implementation Details
+
+#### 1. Prompt Generation (`src/reporter/PromptGenerator.ts`)
+```typescript
+export class PromptGenerator {
+  generatePrompt(result: TestResults): string {
+    // Creates comprehensive AI prompt with:
+    // - Test details (title, status, browser, duration)
+    // - Test description and steps
+    // - Error details with stack traces
+    // - Attachment references (screenshots, videos, traces)
+    // - Structured AI analysis request
+  }
+
+  generateQuickPrompt(result: TestResults): string {
+    // Creates concise prompt for quick fixes
+  }
+
+  generateDebugPrompt(result: TestResults): string {
+    // Creates focused debugging prompt
+  }
+}
+```
+
+#### 2. Integration with StepReporter (`src/reporter/StepReporter.ts`)
+```typescript
+class StepReporter implements Reporter {
+  private promptGenerator = new PromptGenerator();
+
+  async onTestEnd(test: TestCase, result: TestResult) {
+    // ... existing logic to create resultItem
+
+    // Generate AI prompts for failed tests
+    if (result.status === 'failed') {
+      const fullPrompt = this.promptGenerator.generatePrompt(resultItem);
+      const quickPrompt = this.promptGenerator.generateQuickPrompt(resultItem);
+      const debugPrompt = this.promptGenerator.generateDebugPrompt(resultItem);
+      
+      resultItem.prompts = {
+        full: fullPrompt,
+        quick: quickPrompt,
+        debug: debugPrompt
+      };
+    }
+  }
+}
+```
+
+#### 3. HTML Template Integration (`src/reporter/templates/stepReporter.html`)
+```html
+<!-- Copy Prompt buttons (only for failed tests) -->
+<% if (result.status === 'failed' && result.prompts) { %>
+<div class="prompt-actions">
+  <button class="copy-prompt-btn" onclick="copyPrompt('full')" data-prompt-type="full">
+    <span class="material-symbols-outlined">content_copy</span>
+    Copy Full Prompt
+  </button>
+  <button class="copy-prompt-btn" onclick="copyPrompt('quick')" data-prompt-type="quick">
+    <span class="material-symbols-outlined">flash_on</span>
+    Quick Analysis
+  </button>
+  <button class="copy-prompt-btn" onclick="copyPrompt('debug')" data-prompt-type="debug">
+    <span class="material-symbols-outlined">bug_report</span>
+    Debug Help
+  </button>
+</div>
+
+<script>
+  // Clipboard functionality with fallback support
+  async function copyPrompt(type) {
+    const promptText = promptsData[type];
+    
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(promptText);
+      } else {
+        // Fallback for non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = promptText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
+      showNotification('Prompt copied to clipboard!', 'success');
+    } catch (error) {
+      showNotification('Failed to copy prompt. Check console for details.', 'error');
+    }
+  }
+</script>
+<% } %>
+```
+
+#### 4. Type Definitions (`src/reporter/types.ts`)
+```typescript
+export interface TestResults {
+  // ... existing properties
+  prompts?: {
+    full: string;
+    quick: string;
+    debug: string;
+  };
+}
+```
+
+### Key Features
+
+#### ✅ **Smart Prompt Generation**
+- **Context-Aware**: Includes test description, steps, and preconditions
+- **Error-Focused**: Captures complete error messages and stack traces
+- **Attachment References**: Mentions screenshots, videos, traces without including content
+- **AI-Optimized**: Structured format for optimal AI consumption
+
+#### ✅ **Multiple Prompt Types**
+- **Full Prompt**: Comprehensive analysis for complex failures
+- **Quick Analysis**: Fast debugging for simple issues
+- **Debug Help**: Step-by-step debugging guidance
+
+#### ✅ **Robust Clipboard Integration**
+- **Modern API**: Uses `navigator.clipboard` when available
+- **Fallback Support**: Falls back to `document.execCommand` for older browsers
+- **Secure Context Handling**: Works in both secure and non-secure contexts
+- **User Feedback**: Visual confirmation and error handling
+
+#### ✅ **User Experience**
+- **Visual Feedback**: Button state changes and notifications
+- **Error Handling**: Graceful fallbacks and user-friendly error messages
+- **Accessibility**: Proper ARIA labels and keyboard navigation
+
+### Usage Workflow
+
+1. **Run Tests**: Execute tests with Custom Steps reporter
+2. **View Failed Tests**: Navigate to failed test pages
+3. **Copy Prompt**: Click appropriate Copy Prompt button
+4. **Paste to AI**: Paste into Cursor, ChatGPT, or other AI tools
+5. **Get Help**: Receive comprehensive debugging assistance
+
+### Technical Considerations
+
+#### **Data Extraction**
+- Extracts test metadata from Playwright `TestResult` and `TestCase` objects
+- Processes annotations for test steps and descriptions
+- Handles error messages and stack traces
+- References attachments without including binary content
+
+#### **Performance**
+- Minimal overhead - prompts generated only for failed tests
+- Lightweight HTML/CSS/JavaScript integration
+- No external dependencies for clipboard functionality
+
+#### **Browser Compatibility**
+- Modern browsers: Full Clipboard API support
+- Older browsers: Fallback to `document.execCommand`
+- Cross-platform: Works on Windows, macOS, Linux
+
+### Future Enhancements
+
+- **Custom Templates**: User-defined prompt formats
+- **Attachment Content**: Optional inclusion of attachment content
+- **Multi-language Support**: Prompts in different languages
+- **Integration APIs**: Direct integration with AI tools
+- **Prompt History**: Save and reuse successful prompts
+
+### Troubleshooting
+
+#### **Copy Button Not Visible**
+- **Cause**: Buttons only appear on failed tests
+- **Solution**: Navigate to a failed test page
+
+#### **Copy Failed**
+- **Cause**: Browser security restrictions
+- **Solution**: Try refreshing page or different browser
+
+#### **Incomplete Prompts**
+- **Cause**: Missing test annotations or error data
+- **Solution**: Ensure tests have proper descriptions and error handling
+
+### Integration with Other Reporters
+
+Currently available in **Custom Steps Reporter**, **Ortoni Reporter**, and **Allure Reporter**. Future releases will include:
+- **Monocart Reporter**: Integration with Monocart reports
+
+This feature significantly enhances the debugging experience by providing instant access to AI-powered assistance directly from test reports.
+
+### 1. Allure Reports
+**Best for**: Comprehensive reporting, detailed analysis, enterprise environments
+
+#### Features
+- 📊 **Comprehensive reporting** with detailed test results
+- 📈 **Beautiful visualizations** and charts
+- 🔍 **Detailed test steps** and execution flow
+- 📎 **Rich attachments** support (screenshots, videos, traces)
+- 🤖 **AI-Powered Copy Prompt** for failed tests (enhanced with post-processing)
+
+#### Usage
+```bash
+# Run tests with Allure reporting (includes Copy Prompt enhancement)
+npm run test:allure
+
+# View report
+npm run allure:open
+
+# Enhance existing report with Copy Prompt functionality
+npm run enhance-allure
+```
+
+#### AI-Powered Copy Prompt Feature
+The Allure reporter is enhanced with Copy Prompt functionality through post-processing:
+
+- **📋 Copy Full Prompt**: Comprehensive analysis with all test details, errors, attachments
+- **⚡ Quick Analysis**: Fast analysis focusing on the main error and likely fix
+- **🐛 Debug Help**: Debugging-focused prompt with specific debugging steps
+
+The enhancement is automatically applied after test runs and adds copy buttons to failed test results in the Allure report interface.
+
+### 2. Ortoni Reports (Default)
 **Best for**: Quick feedback, lightweight reporting, development
 
 #### Features
@@ -220,15 +513,28 @@ This project supports **three different reporting systems** for comprehensive te
 - 📈 **Test history** with SQLite database
 - 🔄 **Auto-open** reports after test runs
 - 📱 **Responsive design** for all devices
+- 🤖 **AI-Powered Copy Prompt** for failed tests (enhanced with post-processing)
 
 #### Usage
 ```bash
-# Run tests with Ortoni reporting
+# Run tests with Ortoni reporting (includes Copy Prompt enhancement)
 npm run test:ortoni
 
 # View report
 npm run show-ortoni-report
+
+# Enhance existing report with Copy Prompt functionality
+npm run enhance-ortoni
 ```
+
+#### AI-Powered Copy Prompt Feature
+The Ortoni reporter is enhanced with Copy Prompt functionality through post-processing:
+
+- **📋 Copy Full Prompt**: Comprehensive analysis with all test details, errors, attachments
+- **⚡ Quick Analysis**: Fast analysis focusing on the main error and likely fix
+- **🐛 Debug Help**: Debugging-focused prompt with specific debugging steps
+
+The enhancement is automatically applied after test runs and adds copy buttons to failed test results in the Ortoni report interface.
 
 #### Report Location
 - **File**: `ortoni-report/index.html`

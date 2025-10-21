@@ -14,6 +14,10 @@ export class HtmlHelper {
     }
 
     ansiToHtml(text: string): string {
+        if (!text) {
+            return '';
+        }
+        
         // Simple ANSI to HTML conversion - using Unicode escape sequences
         return text
             // eslint-disable-next-line no-control-regex
@@ -64,17 +68,20 @@ export class FileHelper {
 
 export class TimeHelper {
     formatDuration(duration: number): string {
-        const seconds = Math.floor(duration / 1000);
+        const absDuration = Math.abs(duration);
+        const seconds = Math.floor(absDuration / 1000);
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
-        const milliseconds = duration % 1000;
+        const milliseconds = Math.floor(absDuration % 1000);
+        
+        const sign = duration < 0 ? '-' : '';
 
         if (minutes > 0) {
-            return `${minutes}m ${remainingSeconds}s ${milliseconds}ms`;
+            return `${sign}${minutes}m ${remainingSeconds}s ${milliseconds}ms`;
         } else if (remainingSeconds > 0) {
-            return `${remainingSeconds}s ${milliseconds}ms`;
+            return `${sign}${remainingSeconds}s ${milliseconds}ms`;
         } else {
-            return `${milliseconds}ms`;
+            return `${sign}${milliseconds}ms`;
         }
     }
 }

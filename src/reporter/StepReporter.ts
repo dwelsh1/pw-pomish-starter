@@ -2,6 +2,7 @@ import { FullConfig, FullResult, Reporter, TestCase, TestResult } from '@playwri
 import * as path from 'path';
 import { TestResults, TestSummary, AnnotationType, TestStatusIcon } from './types';
 import { HtmlHelper, FileHelper, TimeHelper } from './helpers';
+import { PromptGenerator } from './PromptGenerator';
 
 class StepReporter implements Reporter {
     private testDir = 'tests';
@@ -20,6 +21,7 @@ class StepReporter implements Reporter {
     private htmlHelper = new HtmlHelper();
     private fileHelper = new FileHelper();
     private timeHelper = new TimeHelper();
+    private promptGenerator = new PromptGenerator();
 
     onBegin(config: FullConfig) {
         // Get the testDir from playwright.config.ts or default to tests
@@ -43,23 +45,23 @@ class StepReporter implements Reporter {
         const statusIcon = TestStatusIcon[result.status as keyof typeof TestStatusIcon];
         
         // Get the test steps (discard precondition, postcondition, description and a11y errors)
-        const steps = test.annotations.filter(annotation =>
+        const steps = test.annotations?.filter(annotation =>
             annotation.type !== AnnotationType.Precondition &&
             annotation.type !== AnnotationType.PostCondition &&
             annotation.type !== AnnotationType.Description &&
             annotation.type !== 'A11y')
-            .map(annotation => annotation.description ?? 'No steps');
+            .map(annotation => annotation.description ?? 'No steps') ?? [];
         
         // Get the preconditions
-        const preConditions = test.annotations.filter(annotation => annotation.type === AnnotationType.Precondition)
-            .map(annotation => annotation.description ?? 'No pre conditions');
+        const preConditions = test.annotations?.filter(annotation => annotation.type === AnnotationType.Precondition)
+            .map(annotation => annotation.description ?? 'No pre conditions') ?? [];
         
         // Get the postconditions
-        const postConditions = test.annotations.filter(annotation => annotation.type === AnnotationType.PostCondition)
-            .map(annotation => annotation.description ?? 'No post conditions');
+        const postConditions = test.annotations?.filter(annotation => annotation.type === AnnotationType.PostCondition)
+            .map(annotation => annotation.description ?? 'No post conditions') ?? [];
         
         // Get the description
-        const descriptionAnnotation = test.annotations.find(annotation => annotation.type === AnnotationType.Description);
+        const descriptionAnnotation = test.annotations?.find(annotation => annotation.type === AnnotationType.Description);
         const description = descriptionAnnotation?.description ?? 'No Description';
         
         // Get the browser name
@@ -112,6 +114,20 @@ class StepReporter implements Reporter {
             attachments: reportAttachments,
             errors: errors
         };
+
+        // Generate AI prompts for failed tests
+        if (result.status === 'failed') {
+            const fullPrompt = this.promptGenerator.generatePrompt(resultItem);
+            const quickPrompt = this.promptGenerator.generateQuickPrompt(resultItem);
+            const debugPrompt = this.promptGenerator.generateDebugPrompt(resultItem);
+            
+            // Add prompts to the resultItem
+            resultItem.prompts = {
+                full: fullPrompt,
+                quick: quickPrompt,
+                debug: debugPrompt
+            };
+        }
 
         // Add to the summary by filename
         this.summary.groupedResults[groupKey].push(resultItem);

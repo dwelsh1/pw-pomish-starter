@@ -70,6 +70,7 @@ const getReporters = (): any[] => {
   } else {
     return [
       ['ortoni-report', reportConfig],
+      ['./src/reporter/OrtoniCopyPromptReporter.ts', reportConfig],
       ...baseReporters
     ];
   }

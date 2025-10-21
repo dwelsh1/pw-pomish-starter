@@ -56,6 +56,13 @@ This project includes comprehensive documentation for all four reporting systems
 - Cross-browser visual testing
 - Cloud-based baseline management
 
+### **[COPY_PROMPT_USAGE.md](./COPY_PROMPT_USAGE.md)**
+- AI-powered Copy Prompt feature usage guide
+- Three prompt types: Full Prompt, Quick Analysis, Debug Help
+- Integration with AI tools (Cursor, ChatGPT, Claude)
+- Best practices and troubleshooting
+- Technical implementation details
+
 ### **[VISUAL_FAILURE_DEMO.md](./VISUAL_FAILURE_DEMO.md)**
 - Comprehensive comparison of Playwright vs Applitools visual testing
 - Real-world failure demonstration with both systems

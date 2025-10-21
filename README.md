@@ -19,6 +19,8 @@ A comprehensive Playwright + TypeScript starter that targets the **Restful Booke
 - **Enhanced API tests** with pw-api-plugin for beautiful visualization and playwright-schema-validator for contract validation
 - **Dual visual testing** with both Playwright screenshots and Applitools AI-powered comparison
 - **Four powerful reporting systems** with easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
+- **AI-powered Copy Prompt feature** for instant debugging assistance with failed tests (Custom Steps, Ortoni, and Allure reporters)
+- **Enhanced Steps Reporter** with sidebar navigation, in-page test details, and responsive design
 - **Multi-browser testing** on Chrome, Edge, Safari, and mobile browsers
 
 ## 🚀 Quick Start
@@ -103,10 +105,8 @@ npm run monocart:open
 - **[docs/VISUAL_FAILURE_DEMO.md](./docs/VISUAL_FAILURE_DEMO.md)** - Comprehensive comparison of Playwright vs Applitools visual testing
 - **[docs/ORTONI_SETUP.md](./docs/ORTONI_SETUP.md)** - Ortoni Report configuration and usage
 - **[docs/ALLURE_SETUP.md](./docs/ALLURE_SETUP.md)** - Allure Report setup and advanced features
-- **[docs/STEPS_SETUP.md](./docs/STEPS_SETUP.md)** - Custom Steps Reporter documentation
-- **[docs/MONOCART_SETUP.md](./docs/MONOCART_SETUP.md)** - Monocart Reporter setup and advanced features
-- **[docs/DOCUMENTATION.md](./docs/DOCUMENTATION.md)** - Documentation overview and quick reference
-- **[docs/DEVELOPER.md](./docs/DEVELOPER.md)** - Developer-specific documentation and guidelines
+- **[docs/COPY_PROMPT_USAGE.md](./docs/COPY_PROMPT_USAGE.md)** - AI-powered Copy Prompt feature usage guide
+- **[docs/UNIT_TESTING.md](./docs/UNIT_TESTING.md)** - Unit testing setup and guidelines
 
 ## 🎯 Available Scripts
 

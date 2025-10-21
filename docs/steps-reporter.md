@@ -67,6 +67,27 @@ The Custom Steps Reporter includes an innovative **Copy Prompt** feature that ge
 - **Clipboard Integration**: Modern Clipboard API with fallback support
 - **Visual Feedback**: Button state changes and notifications
 
+## Sidebar Navigation Features
+
+The Steps Reporter now features a modern sidebar navigation system that provides:
+
+### Navigation Options
+- **Dashboard**: Overview of test results with summary statistics
+- **Tests**: List of all tests organized by file with status indicators
+- **Test Details**: In-page test details with enhanced Copy Prompt functionality
+
+### Key Benefits
+- **Single-Page Application**: No page refreshes when navigating between sections
+- **Responsive Design**: Mobile-friendly sidebar that collapses on smaller screens
+- **Browser Navigation**: Back/forward button support with hash-based routing
+- **Enhanced UX**: Seamless navigation between dashboard, test list, and individual test details
+
+### Technical Features
+- **Dynamic Content Loading**: Test details load without leaving the main page
+- **Global Prompt Storage**: Copy Prompt data stored globally for instant access
+- **Media Path Correction**: Automatic path fixing for screenshots and videos
+- **Clean Interface**: Removed unwanted navigation elements for better UX
+
 ## Quick Start
 
 ### Basic Usage
@@ -81,7 +102,7 @@ npm run steps:open
 ### Report Structure
 ```
 steps-report/
-├── summary.html           # Main dashboard
+├── index.html            # Main dashboard with sidebar navigation
 ├── 1/                    # Individual test reports
 │   └── index.html
 ├── 2/

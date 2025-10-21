@@ -1,337 +1,87 @@
-# Allure Report Setup
-
-Allure Report is a powerful, flexible reporting solution that provides rich, interactive HTML reports with comprehensive test analytics and historical tracking capabilities.
+# Allure Reporter Setup
 
 ## Overview
+Allure Reporter provides comprehensive test reporting with detailed test results, attachments, and beautiful visualizations. This guide covers setup, configuration, and the AI-Powered Copy Prompt enhancement.
 
-Allure Report offers:
-- **Rich Test Reports**: Beautiful, interactive HTML reports with detailed analytics
-- **Test History**: Track test results and trends over time
-- **Categories & Tags**: Organize tests by status, severity, and custom categories
-- **Environment Info**: Display comprehensive test environment details
-- **Attachments**: Screenshots, videos, traces, and custom files
-- **Timeline**: Visual timeline of test execution
-- **Trends**: Historical test execution trends and analytics
-- **Integration**: Works with CI/CD pipelines and third-party tools
-
-## Features
-
-### Dashboard Overview
-- **Test Summary**: Comprehensive overview of test execution results
-- **Environment Information**: Detailed environment and configuration details
-- **Test Categories**: Organized view of test results by status and custom categories
-- **Execution Timeline**: Visual timeline showing test execution flow
-- **Trend Analysis**: Historical trends and performance metrics
-
-### Test Details
-- **Individual Test Reports**: Detailed view of each test with full context
-- **Step-by-Step Execution**: Detailed test execution steps
-- **Error Analysis**: Comprehensive error messages with stack traces
-- **Attachments**: Screenshots, videos, traces, and custom files
-- **Test Parameters**: Input parameters and configuration details
-
-### Analytics & Reporting
-- **Categories**: Failed, Broken, Skipped, Passed test categorization
-- **Severity Levels**: Critical, High, Medium, Low severity classification
-- **Feature Mapping**: Organize tests by features and stories
-- **Historical Data**: Track test performance over time
-- **Custom Metrics**: Add custom metrics and KPIs
-
-## Quick Start
-
-### Basic Usage
+## Installation
+Allure Reporter is already included in this project:
 ```bash
-# Run tests with Allure reporting
-npm run test:allure
-
-# Generate static report
-npm run allure:generate
-
-# Serve dynamic report (recommended)
-npm run allure:serve
-
-# Open static report
-npm run allure:open
+npm install allure-playwright allure-commandline
 ```
 
-### Configuration
-
-The Allure reporter is configured in `playwright.config.ts`:
+## Configuration
+The Allure Reporter is configured in `playwright.config.ts`. Ensure your `playwright.config.ts` includes the Allure reporter:
 
 ```typescript
-if (REPORTER_TYPE === 'allure') {
-  return [
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  // ... other configurations
+  reporter: process.env.REPORTER_TYPE === 'allure' ? [
     ['allure-playwright', { 
       outputFolder: 'allure-results',
       detail: true,
       suiteTitle: false 
     }],
-    ...baseReporters
-  ];
-}
+    ['html', { open: 'never', outputFolder: 'reports/html' }]
+  ] : [
+    // ... other reporters
+  ],
+  // ...
+});
 ```
 
-## Available Scripts
+## AI-Powered Copy Prompt Feature
+The Allure reporter is enhanced with AI-Powered Copy Prompt functionality through a post-processing script. This allows you to quickly copy detailed test failure information to AI tools for analysis.
 
-### Test Execution
-- `npm run test:allure` - Run tests with Allure reporting
+### How it Works
+1. **Test Execution**: Run your Playwright tests with the Allure reporter.
+2. **Report Generation**: Allure generates raw results in the `allure-results` directory.
+3. **Report Processing**: Use `allure generate` to create the HTML report from raw results.
+4. **Post-Processing**: A custom script (`enhance-allure.ts`) automatically runs after report generation. This script:
+   - Injects necessary CSS for the Copy Prompt buttons.
+   - Injects JavaScript that dynamically detects failed test elements in the Allure report's DOM.
+   - Attaches "Copy Full Prompt", "Quick Analysis", and "Debug Help" buttons to each failed test.
+   - Provides clipboard functionality and visual feedback.
+   - Generates AI-friendly prompts using the `PromptGenerator` class based on the extracted test data.
 
-### Report Management
-- `npm run allure:generate` - Generate static Allure report
-- `npm run allure:open` - Open generated Allure report
-- `npm run allure:serve` - Serve Allure report dynamically (recommended)
-- `npm run allure:clean` - Clean Allure results and reports
-
-### Other Test Commands
-- `npm run test:e2e` - Run E2E tests
-- `npm run test:api` - Run API tests
-- `npm run test:visual` - Run visual tests
-- `npm run test:chromium` - Run tests on Chrome only
-- `npm run test:edge` - Run tests on Edge only
-- `npm run test:webkit` - Run tests on Safari only
-- `npm run test:mobile` - Run tests on mobile browsers
-
-## Report Structure
-
-```
-allure-results/             # Raw test results (JSON files)
-├── *.json                 # Individual test result files
-└── *.txt                  # Attachment files
-
-allure-report/             # Generated static report
-├── index.html             # Main report file
-├── data/                  # Report data
-├── plugins/               # Allure plugins
-└── static/                # Static assets
-
-allure.config.js           # Allure configuration
-```
-
-## Configuration Options
-
-### Basic Configuration
-```javascript
-module.exports = {
-  resultsDir: 'allure-results',
-  reportDir: 'allure-report',
-  
-  environment: {
-    'Test Environment': 'Restful Booker Platform',
-    'Base URL': process.env.RBP_BASE_URL || 'https://automationintesting.online',
-    'Browser': 'Multi-browser (Chrome, Edge, Safari)',
-    'Platform': process.platform,
-    'Node Version': process.version,
-    'Playwright Version': require('@playwright/test/package.json').version
-  },
-  
-  categories: [
-    {
-      name: 'Failed tests',
-      matchedStatuses: ['failed']
-    },
-    {
-      name: 'Broken tests', 
-      matchedStatuses: ['broken']
-    },
-    {
-      name: 'Skipped tests',
-      matchedStatuses: ['skipped']
-    },
-    {
-      name: 'Passed tests',
-      matchedStatuses: ['passed']
-    }
-  ]
-};
-```
-
-### Advanced Configuration
-```javascript
-// Custom categories
-categories: [
-  {
-    name: 'Critical Issues',
-    matchedStatuses: ['failed'],
-    messageRegex: '.*critical.*'
-  },
-  {
-    name: 'Performance Issues',
-    matchedStatuses: ['failed'],
-    messageRegex: '.*timeout.*|.*slow.*'
-  }
-],
-
-// Custom environment variables
-environment: {
-  'Build Number': process.env.BUILD_NUMBER,
-  'Git Commit': process.env.GIT_COMMIT,
-  'Test Data': 'Production Database',
-  'Browser Versions': 'Chrome 120, Edge 120, Safari 17'
-}
-```
-
-## Switching Between Reporters
-
-### Method 1: Using npm scripts (Recommended)
+### Usage
+To run tests and automatically enhance the Allure report:
 ```bash
-# Use Ortoni Reports
-npm run test:ortoni
-
-# Use Allure Reports
 npm run test:allure
-
-# Use Custom Steps Reports
-npm run test:steps
 ```
 
-### Method 2: Using environment variable
+To manually enhance an existing Allure report:
 ```bash
-# Set reporter type via environment variable
-set REPORTER_TYPE=allure && npm test    # Windows
-REPORTER_TYPE=allure npm test           # Linux/Mac
+npm run allure:generate
+npm run enhance-allure
 ```
 
-## Allure Report Features
+### What's Included in the Prompt
+The prompts generated for Allure reports include:
+- **Test Details**: Title, status, browser, duration, timestamp, file location.
+- **Error Details**: Full error messages and stack traces.
+- **Step Information**: Test execution steps and their status.
+- **Attachment References**: Names of screenshots, videos, and other attachments (e.g., `error-context.md`, `trace.zip`). *Note: The actual binary content of attachments is not included in the prompt due to size limitations and AI context window constraints.*
+- **AI Analysis Request**: A structured request guiding the AI to provide root cause analysis, potential fixes, prevention strategies, and code suggestions.
 
-### What Allure Provides
-- **Rich Test Reports**: Beautiful, interactive HTML reports
-- **Test History**: Track test results over time
-- **Categories**: Organize tests by status (Failed, Broken, Skipped, Passed)
-- **Environment Info**: Display test environment details
-- **Attachments**: Screenshots, videos, and traces on failures
-- **Timeline**: Visual timeline of test execution
-- **Trends**: Historical test execution trends
-- **Custom Categories**: Define custom test categories
-- **Severity Levels**: Assign severity to test failures
-- **Feature Mapping**: Organize tests by features and stories
-
-### Report Structure
-```
-allure-results/     # Raw test results (JSON files)
-allure-report/      # Generated HTML report
-allure.config.js    # Allure configuration
-```
-
-## Configuration
-
-### Playwright Configuration
-The reporter is configured in `playwright.config.ts`:
-- **Ortoni**: Uses `ortoni-report` with custom configuration
-- **Allure**: Uses `allure-playwright` with detailed output
-- **Custom Steps**: Uses custom `StepReporter` implementation
-
-### Allure Configuration
-Customize Allure reports in `allure.config.js`:
-- Environment information
-- Test categories
-- Result patterns
-- Custom metrics
-
-## Best Practices
-
-### For Development
-- Use `npm run allure:serve` for dynamic reports during development
-- Clean results between test runs: `npm run allure:clean`
-
-### For CI/CD
-- Generate static reports: `npm run allure:generate`
-- Archive `allure-report/` directory for artifact storage
-- Include environment variables for better tracking
-
-### For Team Collaboration
-- Share `allure-results/` directory for consistent reporting
-- Use environment variables to switch reporters per team preference
-- Regular cleanup of old report data
+### Report Location
+The enhanced Allure report will be located at:
+- **File**: `allure-report/index.html`
+- **Data**: `allure-report/data/`
+- **Attachments**: `allure-report/data/attachments/`
 
 ## Troubleshooting
+- **Buttons Not Appearing**:
+  - Ensure `npm run test:allure` or `npm run enhance-allure` completed successfully without errors.
+  - Verify that `allure-report/index.html` was modified (check its timestamp).
+  - Open the browser's developer console (F12) and check for JavaScript errors.
+  - The enhancement script relies on specific DOM selectors. If Allure's internal HTML structure changes in a future version, the selectors in `src/reporter/AllureEnhancer.ts` might need adjustment.
+- **"Failed to copy prompt" Error**:
+  - Check the browser's developer console for specific clipboard API errors.
+  - Ensure you are accessing the report over `http://localhost` or `https://` as clipboard access is restricted in non-secure contexts.
 
-### Common Issues
-
-#### Allure command not found
-```bash
-# Ensure allure-commandline is installed
-npm list allure-commandline
-
-# Reinstall if needed
-npm install --save-dev allure-commandline
-```
-
-#### Empty reports
-```bash
-# Run tests first, then generate reports
-npm run test:allure
-npm run allure:generate
-```
-
-#### Permission errors
-```bash
-# Check file permissions in allure-results/
-ls -la allure-results/
-
-# Fix permissions if needed
-chmod -R 755 allure-results/
-```
-
-### Clean Slate
-```bash
-npm run allure:clean    # Clean Allure files
-npm run test:allure     # Run tests with Allure
-npm run allure:serve    # View fresh report
-```
-
-## Integration with Existing Workflow
-
-This setup maintains full compatibility with your existing Ortoni and Custom Steps reporting while adding Allure capabilities. All three systems can coexist and be used interchangeably based on your needs.
-
-- **Ortoni Reports**: Great for quick, lightweight reporting
-- **Allure Reports**: Excellent for detailed analysis and historical tracking
-- **Custom Steps Reports**: Perfect for stakeholder presentations and detailed documentation
-
-## Advanced Features
-
-### Custom Test Categories
-```javascript
-categories: [
-  {
-    name: 'Authentication Issues',
-    matchedStatuses: ['failed'],
-    messageRegex: '.*login.*|.*auth.*'
-  },
-  {
-    name: 'UI Issues',
-    matchedStatuses: ['failed'],
-    messageRegex: '.*element.*|.*click.*|.*visible.*'
-  }
-]
-```
-
-### Environment-Specific Configuration
-```javascript
-const environment = process.env.NODE_ENV === 'production' ? {
-  'Environment': 'Production',
-  'Database': 'Production DB',
-  'API Endpoint': 'https://api.production.com'
-} : {
-  'Environment': 'Development',
-  'Database': 'Test DB',
-  'API Endpoint': 'https://api.dev.com'
-};
-```
-
-### CI/CD Integration
-```yaml
-# GitHub Actions example
-- name: Run Tests with Allure
-  run: npm run test:allure
-
-- name: Generate Allure Report
-  run: npm run allure:generate
-
-- name: Upload Allure Report
-  uses: actions/upload-artifact@v3
-  with:
-    name: allure-report
-    path: allure-report/
-```
-
-This comprehensive Allure setup provides powerful reporting capabilities with detailed analytics, historical tracking, and seamless integration with your existing testing workflow.
+## Additional Resources
+- [Copy Prompt Usage Guide](./COPY_PROMPT_USAGE.md)
+- [Developer Guide](./DEVELOPER.md)
+- [Main Documentation Index](./DOCUMENTATION.md)

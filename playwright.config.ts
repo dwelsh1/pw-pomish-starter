@@ -11,6 +11,11 @@ const RBP_BASE_URL = process.env.RBP_BASE_URL || 'https://automationintesting.on
 // Reporter configuration - can be switched via environment variable
 const REPORTER_TYPE = process.env.REPORTER_TYPE || 'ortoni'; // 'ortoni', 'allure', or 'steps'
 
+// pw-api-plugin configuration
+const LOG_API_UI = process.env.LOG_API_UI !== 'false'; // Enable API details in Playwright UI (default: true)
+const LOG_API_REPORT = process.env.LOG_API_REPORT === 'true'; // Enable API details in HTML reports (default: false)
+const COLOR_SCHEME = process.env.COLOR_SCHEME || 'light'; // 'light', 'dark', or 'accessible'
+
 const reportConfig: OrtoniReportConfig = {
   open: process.env.CI ? 'never' : 'always', // Opens the report automatically unless in CI environment
   folderPath: 'ortoni-report',               // Directory where the report will be saved
@@ -80,7 +85,11 @@ export default defineConfig({
     // Block ads and unnecessary resources
     extraHTTPHeaders: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    }
+    },
+    // pw-api-plugin configuration
+    LOG_API_UI,
+    LOG_API_REPORT,
+    COLOR_SCHEME,
   },
   expect: {
     timeout: 5_000,

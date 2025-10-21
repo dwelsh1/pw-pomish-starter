@@ -16,7 +16,7 @@
 A comprehensive Playwright + TypeScript starter that targets the **Restful Booker Platform (RBP)** at `https://automationintesting.online` and demonstrates:
 
 - **UI tests** with a **POM‑ish** approach (central selectors + tiny helpers, no bloated page classes)
-- **API tests** against the RBP API endpoints
+- **Enhanced API tests** with pw-api-plugin for beautiful visualization and playwright-schema-validator for contract validation
 - **Visual snapshots** using Playwright's built‑in `toHaveScreenshot`
 - **Three powerful reporting systems** with easy switching between Ortoni, Allure, and Custom Steps reporters
 - **Multi-browser testing** on Chrome, Edge, Safari, and mobile browsers
@@ -68,6 +68,7 @@ npm run steps:open
 ## 📚 Documentation
 
 - **[docs/RUNNING_TESTS.md](./docs/RUNNING_TESTS.md)** - Comprehensive guide to running tests and generating reports
+- **[docs/API_PLUGINS.md](./docs/API_PLUGINS.md)** - Enhanced API testing with pw-api-plugin and schema validation
 - **[docs/ORTONI_SETUP.md](./docs/ORTONI_SETUP.md)** - Ortoni Report configuration and usage
 - **[docs/ALLURE_SETUP.md](./docs/ALLURE_SETUP.md)** - Allure Report setup and advanced features
 - **[docs/STEPS_SETUP.md](./docs/STEPS_SETUP.md)** - Custom Steps Reporter documentation
@@ -85,6 +86,10 @@ npm run steps:open
 ### Test Types
 - `npm run test:e2e` - E2E tests only
 - `npm run test:api` - API tests only
+- `npm run test:api:ui` - API tests with UI visualization
+- `npm run test:api:report` - API tests with HTML report details
+- `npm run test:api:dark` - API tests with dark theme
+- `npm run test:api:accessible` - API tests with accessible theme
 - `npm run test:visual` - Visual tests only
 - `npm run test:all` - Run all configured tests
 

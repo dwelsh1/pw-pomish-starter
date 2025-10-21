@@ -10,6 +10,10 @@
     "test:headed": "playwright test --headed",
     "test:e2e": "playwright test tests/e2e",
     "test:api": "playwright test tests/api",
+    "test:api:ui": "cross-env LOG_API_UI=true playwright test tests/api --ui",
+    "test:api:report": "cross-env LOG_API_REPORT=true playwright test tests/api",
+    "test:api:dark": "cross-env COLOR_SCHEME=dark playwright test tests/api",
+    "test:api:accessible": "cross-env COLOR_SCHEME=accessible playwright test tests/api",
     "test:visual": "playwright test tests/visual",
     "show-report": "playwright show-report",
     "show-ortoni-report": "ortoni-report show-report",
@@ -48,7 +52,9 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unused-imports": "^4.0.0",
     "ortoni-report": "^4.0.1",
+    "playwright-schema-validator": "^1.0.0",
     "prettier": "^3.3.3",
+    "pw-api-plugin": "^2.1.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3"
   }

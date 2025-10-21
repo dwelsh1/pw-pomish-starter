@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Enhanced API Testing**: pw-api-plugin for beautiful API visualization and debugging
+- **Schema Validation**: playwright-schema-validator for API contract validation
+- **API Test Scripts**: New npm scripts for API testing with different themes and configurations
+- **API Documentation**: Comprehensive guide for API testing plugins in `docs/API_PLUGINS.md`
+- **Multiple Color Schemes**: Support for light, dark, and accessible themes in API visualization
+- **Enhanced API Reports**: API details included in HTML reports and Trace Viewer
 - Comprehensive documentation in `docs/` folder
 - Three reporting systems: Ortoni, Allure, and Custom Steps reporters
 - Multi-browser testing support (Chrome, Edge, Safari)

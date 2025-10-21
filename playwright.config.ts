@@ -9,7 +9,7 @@ declare const process: NodeJS.Process;
 const RBP_BASE_URL = process.env.RBP_BASE_URL || 'https://automationintesting.online';
 
 // Reporter configuration - can be switched via environment variable
-const REPORTER_TYPE = process.env.REPORTER_TYPE || 'ortoni'; // 'ortoni', 'allure', or 'steps'
+const REPORTER_TYPE = process.env.REPORTER_TYPE || 'ortoni'; // 'ortoni', 'allure', 'steps', or 'monocart'
 
 // pw-api-plugin configuration
 const LOG_API_UI = process.env.LOG_API_UI !== 'false'; // Enable API details in Playwright UI (default: true)
@@ -54,6 +54,17 @@ const getReporters = (): any[] => {
   } else if (REPORTER_TYPE === 'steps') {
     return [
       ['./src/reporter/StepReporter.ts'],
+      ...baseReporters
+    ];
+  } else if (REPORTER_TYPE === 'monocart') {
+    return [
+      ['monocart-reporter', {
+        name: 'RBP Test Report',
+        outputFile: './monocart-report/index.html',
+        onEnd: async (reportData: any, helper: any) => {
+          console.log(`Monocart Report generated: ${reportData.summary.tests.total} tests, ${reportData.summary.tests.failed} failed`);
+        }
+      }],
       ...baseReporters
     ];
   } else {

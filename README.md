@@ -18,7 +18,7 @@ A comprehensive Playwright + TypeScript starter that targets the **Restful Booke
 - **UI tests** with a **POM‑ish** approach (central selectors + tiny helpers, no bloated page classes)
 - **Enhanced API tests** with pw-api-plugin for beautiful visualization and playwright-schema-validator for contract validation
 - **Visual snapshots** using Playwright's built‑in `toHaveScreenshot`
-- **Three powerful reporting systems** with easy switching between Ortoni, Allure, and Custom Steps reporters
+- **Four powerful reporting systems** with easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
 - **Multi-browser testing** on Chrome, Edge, Safari, and mobile browsers
 
 ## 🚀 Quick Start
@@ -34,6 +34,7 @@ npm test
 npm run test:ortoni    # Ortoni Report
 npm run test:allure    # Allure Report
 npm run test:steps     # Custom Steps Report
+npm run test:monocart  # Monocart Report
 
 # UI mode for test development
 npm run test:ui
@@ -41,13 +42,14 @@ npm run test:ui
 
 ## 📊 Reporting Systems
 
-This project supports **three different reporting systems** for comprehensive test result visualization:
+This project supports **four different reporting systems** for comprehensive test result visualization:
 
 | Reporter | Best For | Speed | Features |
 |----------|---------|-------|----------|
 | **Ortoni** | Quick feedback, lightweight | ⚡ Fast | Charts, history, auto-open |
 | **Allure** | Detailed analysis, CI/CD | 🐌 Slower | Rich reports, trends, categories |
 | **Custom Steps** | Stakeholders, documentation | 🐌 Slower | Step-by-step, dynamic charts |
+| **Monocart** | Large test suites, performance | ⚡⚡⚡ Very Fast | Tree grid, ultra-fast filtering |
 
 ### Quick Reporter Commands
 ```bash
@@ -63,6 +65,10 @@ npm run allure:generate     # Static
 # Custom Steps Reports
 npm run test:steps
 npm run steps:open
+
+# Monocart Reports
+npm run test:monocart
+npm run monocart:open
 ```
 
 ## 📚 Documentation
@@ -72,6 +78,7 @@ npm run steps:open
 - **[docs/ORTONI_SETUP.md](./docs/ORTONI_SETUP.md)** - Ortoni Report configuration and usage
 - **[docs/ALLURE_SETUP.md](./docs/ALLURE_SETUP.md)** - Allure Report setup and advanced features
 - **[docs/STEPS_SETUP.md](./docs/STEPS_SETUP.md)** - Custom Steps Reporter documentation
+- **[docs/MONOCART_SETUP.md](./docs/MONOCART_SETUP.md)** - Monocart Reporter setup and advanced features
 - **[docs/DOCUMENTATION.md](./docs/DOCUMENTATION.md)** - Documentation overview and quick reference
 - **[docs/DEVELOPER.md](./docs/DEVELOPER.md)** - Developer-specific documentation and guidelines
 
@@ -82,6 +89,7 @@ npm run steps:open
 - `npm run test:ortoni` - Run tests with Ortoni reporting
 - `npm run test:allure` - Run tests with Allure reporting
 - `npm run test:steps` - Run tests with Custom Steps reporting
+- `npm run test:monocart` - Run tests with Monocart reporting
 
 ### Test Types
 - `npm run test:e2e` - E2E tests only

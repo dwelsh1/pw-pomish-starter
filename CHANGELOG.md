@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Monocart Reporter**: High-performance tree grid reporter for large test suites
+- **Four Reporter System**: Easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
 - **Enhanced API Testing**: pw-api-plugin for beautiful API visualization and debugging
 - **Schema Validation**: playwright-schema-validator for API contract validation
 - **API Test Scripts**: New npm scripts for API testing with different themes and configurations

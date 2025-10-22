@@ -33,23 +33,49 @@ export class HtmlHelper {
 }
 
 export class FileHelper {
-    public folderResults = 'steps-report';
+    public folderResults = 'specs-report';
 
     copyFileToResults(folderTest: string, sourcePath: string): string {
-        if (!sourcePath || sourcePath.trim() === '' || !fs.existsSync(sourcePath)) {
+        if (!sourcePath || sourcePath.trim() === '') {
             return '';
         }
         
         const fileName = path.basename(sourcePath);
         const destPath = path.join(folderTest, fileName);
         
-        try {
-            fs.copyFileSync(sourcePath, destPath);
-            return fileName;
-        } catch (error) {
-            console.warn(`Failed to copy file ${sourcePath}:`, error);
-            return '';
+        // Retry mechanism for timing issues
+        const maxRetries = 3;
+        const retryDelay = 100; // 100ms
+        
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                if (fs.existsSync(sourcePath)) {
+                    fs.copyFileSync(sourcePath, destPath);
+                    return fileName;
+                } else if (attempt < maxRetries) {
+                    // Wait a bit and try again
+                    const start = Date.now();
+                    while (Date.now() - start < retryDelay) {
+                        // Busy wait
+                    }
+                    continue;
+                }
+            } catch (error) {
+                if (attempt < maxRetries) {
+                    // Wait a bit and try again
+                    const start = Date.now();
+                    while (Date.now() - start < retryDelay) {
+                        // Busy wait
+                    }
+                    continue;
+                } else {
+                    console.warn(`Failed to copy file ${sourcePath} after ${maxRetries} attempts:`, error);
+                    return '';
+                }
+            }
         }
+        
+        return '';
     }
 
     copyVideo(result: unknown, folderTest: string): string {

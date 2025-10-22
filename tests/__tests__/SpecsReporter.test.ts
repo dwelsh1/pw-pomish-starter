@@ -1,4 +1,4 @@
-import StepReporter from '../../src/reporter/StepReporter';
+import SpecsReporter from '../../src/reporter/SpecsReporter';
 import { TestCase, TestResult, FullConfig, FullResult } from '@playwright/test/reporter';
 import { 
   createMockTestCase, 
@@ -13,14 +13,14 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe('StepReporter', () => {
-  let reporter: StepReporter;
+describe('SpecsReporter', () => {
+  let reporter: SpecsReporter;
   let mockConfig: FullConfig;
   let mockTestCase: TestCase;
   let mockTestResult: TestResult;
 
   beforeEach(() => {
-    reporter = new StepReporter();
+    reporter = new SpecsReporter();
     mockConfig = createMockConfig() as FullConfig;
     mockTestCase = createMockTestCase();
     mockTestResult = createMockTestResult();
@@ -43,12 +43,21 @@ describe('StepReporter', () => {
   });
 
   afterEach(() => {
-    // Clean up test directories
-    if (fs.existsSync('test-temp')) {
-      fs.rmSync('test-temp', { recursive: true, force: true });
+    // Clean up test directories with better error handling
+    try {
+      if (fs.existsSync('test-temp')) {
+        fs.rmSync('test-temp', { recursive: true, force: true });
+      }
+    } catch (error) {
+      // Ignore cleanup errors
     }
-    if (fs.existsSync('steps-report')) {
-      fs.rmSync('steps-report', { recursive: true, force: true });
+    
+    try {
+      if (fs.existsSync('specs-report')) {
+        fs.rmSync('specs-report', { recursive: true, force: true });
+      }
+    } catch (error) {
+      // Ignore cleanup errors
     }
   });
 
@@ -70,21 +79,17 @@ describe('StepReporter', () => {
       createTestFiles();
     });
 
-    afterEach(() => {
-      cleanupTestFiles();
-    });
-
     it('should process a passed test correctly', async () => {
       await reporter.onTestEnd(mockTestCase, mockTestResult);
 
       // Verify test directory was created
-      expect(fs.existsSync('steps-report/1')).toBe(true);
+      expect(fs.existsSync('specs-report/1')).toBe(true);
       
       // Verify HTML file was created
-      expect(fs.existsSync('steps-report/1/index.html')).toBe(true);
+      expect(fs.existsSync('specs-report/1/index.html')).toBe(true);
       
       // Verify HTML content contains test information
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('Test Login Functionality');
       expect(htmlContent).toContain('rbp-chromium');
       expect(htmlContent).toContain('smoke, login');
@@ -95,7 +100,7 @@ describe('StepReporter', () => {
       await reporter.onTestEnd(mockTestCase, failedResult);
 
       // Verify HTML content contains error information
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('Error: expect(locator).toBeVisible()');
       expect(htmlContent).toContain('Expected: visible');
       expect(htmlContent).toContain('Received: hidden');
@@ -105,7 +110,7 @@ describe('StepReporter', () => {
       const ansiErrorResult = createMockAnsiErrorResult();
       await reporter.onTestEnd(mockTestCase, ansiErrorResult);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       // Check that ANSI colors are converted to HTML spans
       expect(htmlContent).toContain('Error: Element not found');
       expect(htmlContent).toContain('Warning: This is a warning');
@@ -116,7 +121,7 @@ describe('StepReporter', () => {
       const testCaseNoAnnotations = createMockTestCase({ annotations: [] });
       await reporter.onTestEnd(testCaseNoAnnotations, mockTestResult);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('Test Login Functionality');
     });
 
@@ -131,18 +136,18 @@ describe('StepReporter', () => {
       });
       await reporter.onTestEnd(testCaseNoDescription, mockTestResult);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       // The description section should not be present when there's no description
       expect(htmlContent).not.toContain('No Description');
     });
 
     it('should increment test number for each test', async () => {
       await reporter.onTestEnd(mockTestCase, mockTestResult);
-      expect(fs.existsSync('steps-report/1')).toBe(true);
+      expect(fs.existsSync('specs-report/1')).toBe(true);
 
       const secondTestCase = createMockTestCase({ title: 'Second Test' });
       await reporter.onTestEnd(secondTestCase, mockTestResult);
-      expect(fs.existsSync('steps-report/2')).toBe(true);
+      expect(fs.existsSync('specs-report/2')).toBe(true);
     });
 
     it('should group tests by filename', async () => {
@@ -164,9 +169,9 @@ describe('StepReporter', () => {
       await reporter.onTestEnd(testCase3, mockTestResult);
 
       // Verify summary will be generated with grouped results
-      expect(fs.existsSync('steps-report/1')).toBe(true);
-      expect(fs.existsSync('steps-report/2')).toBe(true);
-      expect(fs.existsSync('steps-report/3')).toBe(true);
+      expect(fs.existsSync('specs-report/1')).toBe(true);
+      expect(fs.existsSync('specs-report/2')).toBe(true);
+      expect(fs.existsSync('specs-report/3')).toBe(true);
     });
 
     it('should handle flaky tests correctly', async () => {
@@ -181,7 +186,7 @@ describe('StepReporter', () => {
 
       await reporter.onTestEnd(flakyTestCase, flakyResult);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('Test Login Functionality');
     });
 
@@ -194,7 +199,7 @@ describe('StepReporter', () => {
         
         await reporter.onTestEnd(testCase, result);
         
-        const htmlContent = fs.readFileSync(`steps-report/${i + 1}/index.html`, 'utf8');
+        const htmlContent = fs.readFileSync(`specs-report/${i + 1}/index.html`, 'utf8');
         expect(htmlContent).toContain(`Test ${statuses[i]}`);
       }
     });
@@ -208,7 +213,7 @@ describe('StepReporter', () => {
       
       await reporter.onTestEnd(testCaseNoBrowser, mockTestResult);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('No browser');
     });
 
@@ -216,7 +221,7 @@ describe('StepReporter', () => {
       const resultNoAttachments = createMockTestResult({ attachments: [] });
       await reporter.onTestEnd(mockTestCase, resultNoAttachments);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('Test Login Functionality');
     });
 
@@ -224,7 +229,7 @@ describe('StepReporter', () => {
       const resultNullAttachments = createMockTestResult({ attachments: undefined });
       await reporter.onTestEnd(mockTestCase, resultNullAttachments);
 
-      const htmlContent = fs.readFileSync('steps-report/1/index.html', 'utf8');
+      const htmlContent = fs.readFileSync('specs-report/1/index.html', 'utf8');
       expect(htmlContent).toContain('Test Login Functionality');
     });
   });
@@ -245,11 +250,11 @@ describe('StepReporter', () => {
       await reporter.onEnd(mockFullResult);
 
       // Verify summary file was created
-      expect(fs.existsSync('steps-report/summary.html')).toBe(true);
+      expect(fs.existsSync('specs-report/index.html')).toBe(true);
       
       // Verify summary content
-      const summaryContent = fs.readFileSync('steps-report/summary.html', 'utf8');
-      expect(summaryContent).toContain('Playwright Test Steps Report');
+      const summaryContent = fs.readFileSync('specs-report/index.html', 'utf8');
+      expect(summaryContent).toContain('Specs Reporter');
       expect(summaryContent).toContain('Total Tests');
       expect(summaryContent).toContain('Passed');
       expect(summaryContent).toContain('Failed');
@@ -260,9 +265,9 @@ describe('StepReporter', () => {
       const mockFullResult = createMockFullResult();
       await reporter.onEnd(mockFullResult);
 
-      expect(fs.existsSync('steps-report/summary.html')).toBe(true);
+      expect(fs.existsSync('specs-report/index.html')).toBe(true);
       
-      const summaryContent = fs.readFileSync('steps-report/summary.html', 'utf8');
+      const summaryContent = fs.readFileSync('specs-report/index.html', 'utf8');
       expect(summaryContent).toContain('Total Tests');
     });
 
@@ -272,7 +277,7 @@ describe('StepReporter', () => {
       const mockFullResult = createMockFullResult({ duration: 15000 });
       await reporter.onEnd(mockFullResult);
 
-      const summaryContent = fs.readFileSync('steps-report/summary.html', 'utf8');
+      const summaryContent = fs.readFileSync('specs-report/index.html', 'utf8');
       expect(summaryContent).toContain('15s');
     });
   });

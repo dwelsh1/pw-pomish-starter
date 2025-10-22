@@ -18,7 +18,11 @@ describe('HtmlHelper', () => {
   afterEach(() => {
     // Clean up test directory
     if (fs.existsSync(testDir)) {
-      fs.rmSync(testDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(testDir, { recursive: true, force: true });
+      } catch (error) {
+        // Ignore cleanup errors
+      }
     }
   });
 
@@ -36,18 +40,21 @@ describe('HtmlHelper', () => {
       
       // Mock template file
       const templateContent = '<h1><%= result.title %></h1><p>Status: <%= result.status %></p>';
-      const templatePath = path.join(testDir, 'test-template.html');
-      fs.writeFileSync(templatePath, templateContent);
+      const localTemplatePath = path.join(testDir, 'test-template.html');
+      fs.writeFileSync(localTemplatePath, templateContent);
 
       // Create a mock HtmlHelper that uses our template
       const mockHtmlHelper = new HtmlHelper();
       
-      // We'll test the actual functionality by creating the template in the expected location
+      // Ensure the templates directory exists
       const templatesDir = path.join(__dirname, '../../src/reporter/templates');
       if (!fs.existsSync(templatesDir)) {
         fs.mkdirSync(templatesDir, { recursive: true });
       }
-      fs.writeFileSync(path.join(templatesDir, 'test-template.html'), templateContent);
+      
+      // Create the template file
+      const templatePath = path.join(templatesDir, 'test-template.html');
+      fs.writeFileSync(templatePath, templateContent);
 
       await mockHtmlHelper.replaceTags('test-template.html', templateData, testDir, outputFile);
 
@@ -287,6 +294,8 @@ describe('FileHelper', () => {
       
       const result = fileHelper.copyScreenshots(mockResult, destDir);
       
+      // The method should return the filename of successfully copied files
+      // Only the valid file should be copied successfully
       expect(result).toEqual(['valid.png']);
     });
   });

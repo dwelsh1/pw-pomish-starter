@@ -20,7 +20,7 @@ A comprehensive Playwright + TypeScript starter that targets the **Restful Booke
 - **Dual visual testing** with both Playwright screenshots and Applitools AI-powered comparison
 - **Four powerful reporting systems** with easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
 - **AI-powered Copy Prompt feature** for instant debugging assistance with failed tests (Custom Steps, Ortoni, and Allure reporters)
-- **Enhanced Steps Reporter** with sidebar navigation, in-page test details, and responsive design
+- **Enhanced Specs Reporter** with sidebar navigation, in-page test details, and responsive design
 - **Multi-browser testing** on Chrome, Edge, Safari, and mobile browsers
 
 ## 🚀 Quick Start
@@ -162,7 +162,7 @@ npm run monocart:open
 │  ├─ RUNNING_TESTS.md     # Comprehensive test execution guide
 │  ├─ ORTONI_SETUP.md      # Ortoni Report setup
 │  ├─ ALLURE_SETUP.md      # Allure Report setup
-│  ├─ STEPS_SETUP.md       # Custom Steps Reporter setup
+│  ├─ STEPS_SETUP.md       # Specs Reporter setup
 │  ├─ DOCUMENTATION.md     # Documentation overview
 │  └─ DEVELOPER.md         # Developer guidelines
 ├─ src/
@@ -170,8 +170,8 @@ npm run monocart:open
 │  ├─ helpers/              # Reusable test helpers
 │  ├─ fixtures/             # Test fixtures and capabilities
 │  ├─ utils/                # Utilities (visual stability, etc.)
-│  └─ reporter/             # Custom Steps Reporter implementation
-│     ├─ StepReporter.ts    # Main reporter class
+│  └─ reporter/             # Specs Reporter implementation
+│     ├─ SpecsReporter.ts    # Main reporter class
 │     ├─ types.ts           # TypeScript interfaces
 │     ├─ helpers.ts         # Utility classes
 │     └─ templates/         # HTML templates
@@ -182,7 +182,7 @@ npm run monocart:open
 ├─ ortoni-report/          # Ortoni reports (auto-generated)
 ├─ allure-results/         # Allure raw results
 ├─ allure-report/          # Allure generated reports
-├─ steps-report/           # Custom Steps reports
+├─ specs-report/           # Custom Specs reports
 └─ reports/html/           # Standard Playwright HTML reports
 ```
 

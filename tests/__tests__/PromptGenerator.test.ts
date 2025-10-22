@@ -67,7 +67,7 @@ describe('PromptGenerator', () => {
       expect(prompt).toContain('1. test-video.webm');
       expect(prompt).toContain('### Other Attachments');
       expect(prompt).toContain('1. test-trace.zip');
-      expect(prompt).toContain('2. error-context');
+      expect(prompt).toContain('1. error-context');
       expect(prompt).toContain('## AI Analysis Request');
       expect(prompt).toContain('Please analyze this test failure and provide:');
       expect(prompt).toContain('1. **Root Cause Analysis:**');

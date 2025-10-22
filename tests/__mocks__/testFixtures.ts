@@ -186,8 +186,12 @@ export const cleanupTestFiles = () => {
   const fs = require('fs');
   
   Object.values(TEST_FILE_PATHS).forEach(filePath => {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (error) {
+      // Ignore cleanup errors - files might be in use
     }
   });
 };

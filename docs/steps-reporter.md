@@ -1,10 +1,10 @@
-# Custom Steps Reporter Setup
+# Specs Reporter Setup
 
-The Custom Steps Reporter is a stakeholder-friendly reporting solution that generates detailed, readable test reports with dynamic charts and comprehensive test step documentation.
+The Specs Reporter is a stakeholder-friendly reporting solution that generates detailed, readable test reports with dynamic charts and comprehensive test step documentation.
 
 ## Overview
 
-The Custom Steps Reporter provides:
+The Specs Reporter provides:
 - **Stakeholder-Friendly Interface**: Clear, non-technical test descriptions
 - **Dynamic Charts**: Interactive visualizations using ApexCharts
 - **Detailed Test Steps**: Comprehensive test documentation with preconditions, steps, and postconditions
@@ -92,7 +92,7 @@ The Steps Reporter now features a modern sidebar navigation system that provides
 
 ### Basic Usage
 ```bash
-# Run tests with Custom Steps reporting
+# Run tests with Specs reporting
 npm run test:steps
 
 # Open the generated report
@@ -101,7 +101,7 @@ npm run steps:open
 
 ### Report Structure
 ```
-steps-report/
+specs-report/
 ├── index.html            # Main dashboard with sidebar navigation
 ├── 1/                    # Individual test reports
 │   └── index.html
@@ -112,10 +112,10 @@ steps-report/
 
 ## Configuration
 
-The Custom Steps Reporter is implemented as a custom Playwright reporter in `src/reporter/StepReporter.ts`:
+The Specs Reporter is implemented as a custom Playwright reporter in `src/reporter/SpecsReporter.ts`:
 
 ```typescript
-class StepReporter implements Reporter {
+class SpecsReporter implements Reporter {
   private testDir = 'tests';
   private testNo = 0;
   private summary: TestSummary = {
@@ -136,15 +136,15 @@ class StepReporter implements Reporter {
 ## Available Scripts
 
 ### Test Execution
-- `npm run test:steps` - Run tests with Custom Steps reporting
+- `npm run test:steps` - Run tests with Specs reporting
 
 ### Report Management
-- `npm run steps:open` - Open Custom Steps report in browser
-- `npm run steps:clean` - Clean Custom Steps report files
+- `npm run steps:open` - Open Specs report in browser
+- `npm run steps:clean` - Clean Specs report files
 
 ## Test Annotations
 
-The Custom Steps Reporter supports test annotations for better documentation:
+The Specs Reporter supports test annotations for better documentation:
 
 ### Available Annotation Types
 ```typescript
@@ -301,7 +301,7 @@ ls src/reporter/templates/
   uses: actions/upload-artifact@v3
   with:
     name: steps-report
-    path: steps-report/
+    path: specs-report/
 ```
 
 ### With Different Test Types
@@ -376,7 +376,7 @@ var pieChartOptions = {
 
 ```
 src/reporter/
-├── StepReporter.ts          # Main reporter implementation
+├── SpecsReporter.ts          # Main reporter implementation
 ├── PromptGenerator.ts       # AI prompt generation utility
 ├── types.ts                 # TypeScript interfaces and enums
 ├── helpers.ts               # Utility classes (HtmlHelper, FileHelper, TimeHelper)
@@ -384,7 +384,7 @@ src/reporter/
     ├── summary.html         # Dashboard template
     └── stepReporter.html    # Individual test template
 
-steps-report/                # Generated reports
+specs-report/                # Generated reports
 ├── summary.html            # Main dashboard
 ├── 1/                     # Test 1 details
 │   └── index.html
@@ -393,13 +393,13 @@ steps-report/                # Generated reports
 └── ...                    # Additional test folders
 ```
 
-This Custom Steps Reporter provides the most comprehensive and stakeholder-friendly reporting solution, perfect for teams that need detailed test documentation and clear communication with non-technical stakeholders.
+This Specs Reporter provides the most comprehensive and stakeholder-friendly reporting solution, perfect for teams that need detailed test documentation and clear communication with non-technical stakeholders.
 
-## 📂 Steps Reporter File Structure
+## 📂 Specs Reporter File Structure
 
 ```
 src/reporter/
-├── StepReporter.ts          # Main reporter implementation
+├── SpecsReporter.ts          # Main reporter implementation
 ├── PromptGenerator.ts       # AI prompt generation logic
 ├── types.ts                 # TypeScript interfaces
 ├── helpers.ts               # Utility functions
@@ -407,7 +407,7 @@ src/reporter/
     ├── stepReporter.html    # Individual test report template
     └── summary.html         # Summary report template (renamed to index.html)
 
-steps-report/                 # Generated reports
+specs-report/                 # Generated reports
 ├── index.html              # Main summary page
 ├── 1/index.html            # Individual test reports
 ├── 2/index.html

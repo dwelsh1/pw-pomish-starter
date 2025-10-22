@@ -53,7 +53,7 @@ const getReporters = (): any[] => {
     ];
   } else if (REPORTER_TYPE === 'steps') {
     return [
-      ['./src/reporter/StepReporter.ts'],
+      ['./src/reporter/SpecsReporter.ts'],
       ...baseReporters
     ];
   } else if (REPORTER_TYPE === 'monocart') {

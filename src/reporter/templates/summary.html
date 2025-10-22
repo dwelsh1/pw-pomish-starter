@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <title>Playwright Test Steps Report - Summary</title>
+    <title>Specs Reporter - Summary</title>
     <style>
         * {
             margin: 0;
@@ -327,6 +327,215 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
+        /* Test Specs Styling */
+        .test-specs-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .test-specs-header h2 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+        }
+
+        .test-specs-header p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .specs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .spec-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .spec-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #3498db;
+        }
+
+        .spec-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .spec-name {
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .spec-count {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .spec-summary {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.passed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.skipped {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        /* Spec Tests View */
+        .spec-tests-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background: #2980b9;
+        }
+
+        #spec-tests-title {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .tests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .test-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .test-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .test-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .test-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .test-status.status-passed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .test-status.status-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .test-status.status-skipped {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .test-title {
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .test-duration {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .test-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .test-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .copy-prompt-btn {
+            padding: 6px 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .copy-prompt-btn:hover {
+            background: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -339,12 +548,16 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>Steps Reporter</h2>
+                <h2>Specs Reporter</h2>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active" onclick="showSection('dashboard')">
                     <span class="material-symbols-outlined">dashboard</span>
                     Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('specs')">
+                    <span class="material-symbols-outlined">description</span>
+                    Test Specs
                 </a>
                 <a href="#" class="nav-item" onclick="showSection('tests')">
                     <span class="material-symbols-outlined">list</span>
@@ -360,7 +573,7 @@
                 <div id="dashboard-content" class="content-section active">
                     <div class="header">
                         <h1>
-                            Playwright Test Steps Report
+                            Specs Reporter
                         </h1>
                         <p><strong>Duration:</strong> <%= results.duration %></p>
                         <p><strong>Generated:</strong> <%= new Date().toLocaleString() %></p>
@@ -394,6 +607,52 @@
                             <h3>Top 10 Longest Tests</h3>
                             <div id="barChart"></div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Test Specs Section -->
+                <div id="specs-content" class="content-section">
+                    <div class="test-specs-header">
+                        <h2>Test Specifications</h2>
+                        <p>Click on a spec to view its tests</p>
+                    </div>
+                    
+                    <div class="specs-list">
+                        <% Object.keys(results.groupedResults).forEach(function(fileName) { %>
+                            <div class="spec-item" onclick="showSpecTests('<%= fileName %>')">
+                                <div class="spec-header">
+                                    <span class="material-symbols-outlined">description</span>
+                                    <span class="spec-name"><%= fileName %></span>
+                                    <span class="spec-count">(<%= results.groupedResults[fileName].length %> tests)</span>
+                                </div>
+                                <div class="spec-summary">
+                                    <% 
+                                        const specResults = results.groupedResults[fileName];
+                                        const passed = specResults.filter(t => t.status === 'passed').length;
+                                        const failed = specResults.filter(t => t.status === 'failed').length;
+                                        const skipped = specResults.filter(t => t.status === 'skipped').length;
+                                    %>
+                                    <span class="status-badge passed"><%= passed %> passed</span>
+                                    <span class="status-badge failed"><%= failed %> failed</span>
+                                    <span class="status-badge skipped"><%= skipped %> skipped</span>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <!-- Spec Tests Section -->
+                <div id="spec-tests-content" class="content-section">
+                    <div class="spec-tests-header">
+                        <button class="back-button" onclick="showSection('specs')">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back to Specs
+                        </button>
+                        <h2 id="spec-tests-title">Spec Tests</h2>
+                    </div>
+                    
+                    <div id="spec-tests-list" class="tests-list">
+                        <!-- Dynamically populated with tests from selected spec -->
                     </div>
                 </div>
 
@@ -445,13 +704,40 @@
                 <% results.groupedResults[fileName].forEach(function(test) { %>
                     <% if (test.status === 'failed' && test.prompts) { %>
                         '<%= test.num %>': {
-                            full: `<%= test.prompts.full.replace(/`/g, '\\`').replace(/\$/g, '\\$') %>`,
-                            quick: `<%= test.prompts.quick.replace(/`/g, '\\`').replace(/\$/g, '\\$') %>`,
-                            debug: `<%= test.prompts.debug.replace(/`/g, '\\`').replace(/\$/g, '\\$') %>`
+                            full: <%- JSON.stringify(test.prompts.full) %>,
+                            quick: <%- JSON.stringify(test.prompts.quick) %>,
+                            debug: <%- JSON.stringify(test.prompts.debug) %>
                         },
                     <% } %>
                 <% }); %>
             <% }); %>
+        };
+
+        // Enhanced global test data structure for Test Specs
+        window.testData = {
+            groupedResults: {
+                <% Object.keys(results.groupedResults).forEach(function(fileName) { %>
+                    '<%= fileName %>': [
+                        <% results.groupedResults[fileName].forEach(function(test, index) { %>
+                            {
+                                num: '<%= test.num %>',
+                                title: '<%= test.title %>',
+                                status: '<%= test.status %>',
+                                duration: '<%= test.duration %>',
+                                browser: '<%= test.browser %>',
+                                fileName: '<%= test.fileName %>',
+                                prompts: {
+                                    <% if (test.prompts) { %>
+                                        full: <%- JSON.stringify(test.prompts.full) %>,
+                                        quick: <%- JSON.stringify(test.prompts.quick) %>,
+                                        debug: <%- JSON.stringify(test.prompts.debug) %>
+                                    <% } %>
+                                }
+                            }<%= index < results.groupedResults[fileName].length - 1 ? ',' : '' %>
+                        <% }); %>
+                    ]<%= Object.keys(results.groupedResults).indexOf(fileName) < Object.keys(results.groupedResults).length - 1 ? ',' : '' %>
+                <% }); %>
+            }
         };
 
         // Sidebar Navigation Functions
@@ -482,6 +768,69 @@
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('open');
             }
+        }
+
+        // Test Specs Functions
+        function showSpecTests(fileName) {
+            // Hide specs list, show spec tests
+            document.getElementById('specs-content').classList.remove('active');
+            document.getElementById('spec-tests-content').classList.add('active');
+            
+            // Update title
+            document.getElementById('spec-tests-title').textContent = `Tests in ${fileName}`;
+            
+            // Populate tests list
+            populateSpecTests(fileName);
+            
+            // Update URL hash
+            window.location.hash = `spec-${encodeURIComponent(fileName)}`;
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        function populateSpecTests(fileName) {
+            const testsList = document.getElementById('spec-tests-list');
+            const specTests = window.testData.groupedResults[fileName];
+            
+            if (!specTests) {
+                testsList.innerHTML = '<p>No tests found for this spec.</p>';
+                return;
+            }
+            
+            let html = '';
+            specTests.forEach(test => {
+                html += `
+                    <div class="test-item" onclick="showTestDetail('${test.num}')">
+                        <div class="test-header">
+                            <span class="test-status status-${test.status}">${test.status}</span>
+                            <span class="test-title">${test.title}</span>
+                            <span class="test-duration">${test.duration}</span>
+                        </div>
+                        <div class="test-meta">
+                            <span class="test-browser">${test.browser}</span>
+                            <span class="test-file">${test.fileName}</span>
+                        </div>
+                        ${test.status === 'failed' ? `
+                            <div class="test-actions">
+                                <button class="copy-prompt-btn" onclick="event.stopPropagation(); copyPromptFromTestDetail('full', '${test.num}')">
+                                    Copy Full Prompt
+                                </button>
+                                <button class="copy-prompt-btn" onclick="event.stopPropagation(); copyPromptFromTestDetail('quick', '${test.num}')">
+                                    Copy Quick Prompt
+                                </button>
+                                <button class="copy-prompt-btn" onclick="event.stopPropagation(); copyPromptFromTestDetail('debug', '${test.num}')">
+                                    Copy Debug Prompt
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            testsList.innerHTML = html;
         }
 
         // Test Detail Functions
@@ -556,9 +905,9 @@
                     // Remove any remaining "Back to Summary" text
                     cleanedContent = cleanedContent.replace(/Back to Summary/gi, '');
                     
-                    // Fix image and video paths to include the test folder
-                    cleanedContent = cleanedContent.replace(/src="([^"]*\.(png|jpg|jpeg|gif|webm|mp4))"/gi, `src="${testNum}/$1"`);
-                    cleanedContent = cleanedContent.replace(/href="([^"]*\.(png|jpg|jpeg|gif|webm|mp4))"/gi, `href="${testNum}/$1"`);
+                    // Fix image, video, and attachment paths to include the test folder
+                    cleanedContent = cleanedContent.replace(/src="([^"]*\.(png|jpg|jpeg|gif|webm|mp4|md|zip|txt|log))"/gi, `src="${testNum}/$1"`);
+                    cleanedContent = cleanedContent.replace(/href="([^"]*\.(png|jpg|jpeg|gif|webm|mp4|md|zip|txt|log))"/gi, `href="${testNum}/$1"`);
                     
                     // Fix Copy Prompt button onclick handlers (only if they exist)
                     cleanedContent = cleanedContent.replace(/onclick="copyPrompt\(([^)]+)\)"/gi, `onclick="copyPromptFromTestDetail($1, '${testNum}')"`);
@@ -679,7 +1028,13 @@
         // Handle URL hash on page load
         function handleHashOnLoad() {
             const hash = window.location.hash.substring(1);
-            if (hash === 'dashboard' || hash === 'tests') {
+            
+            if (hash.startsWith('spec-')) {
+                const fileName = decodeURIComponent(hash.substring(5));
+                showSpecTests(fileName);
+            } else if (hash === 'specs') {
+                showSection('specs');
+            } else if (hash === 'dashboard' || hash === 'tests') {
                 showSection(hash);
             } else if (hash.startsWith('test-')) {
                 const testNum = hash.substring(5); // Remove 'test-' prefix
@@ -692,7 +1047,13 @@
         // Handle browser back/forward buttons
         window.addEventListener('hashchange', function() {
             const hash = window.location.hash.substring(1);
-            if (hash === 'dashboard' || hash === 'tests') {
+            
+            if (hash.startsWith('spec-')) {
+                const fileName = decodeURIComponent(hash.substring(5));
+                showSpecTests(fileName);
+            } else if (hash === 'specs') {
+                showSection('specs');
+            } else if (hash === 'dashboard' || hash === 'tests') {
                 showSection(hash);
             } else if (hash.startsWith('test-')) {
                 const testNum = hash.substring(5); // Remove 'test-' prefix

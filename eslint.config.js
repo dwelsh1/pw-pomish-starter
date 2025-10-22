@@ -66,7 +66,7 @@ module.exports = [
       'ortoni-report/**',
       'allure-results/**',
       'allure-report/**',
-      'steps-report/**',
+      'specs-report/**',
       'playwright-report/**',
     ],
   },

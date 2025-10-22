@@ -1,5 +1,6 @@
 import { FullConfig, FullResult, Reporter, TestCase, TestResult } from '@playwright/test/reporter';
 import * as path from 'path';
+import * as fs from 'fs';
 import { TestResults, TestSummary, AnnotationType, TestStatusIcon } from './types';
 import { HtmlHelper, FileHelper, TimeHelper } from './helpers';
 import { PromptGenerator } from './PromptGenerator';
@@ -18,6 +19,7 @@ class SpecsReporter implements Reporter {
         totalSkipped: 0,
         groupedResults: {}
     };
+    private pendingAttachments: Array<{testNum: number, folderTest: string, attachments: any[], result: any}> = [];
     private htmlHelper = new HtmlHelper();
     private fileHelper = new FileHelper();
     private timeHelper = new TimeHelper();
@@ -30,7 +32,7 @@ class SpecsReporter implements Reporter {
 
     async onTestEnd(test: TestCase, result: TestResult) {
         this.testNo++;
-        const folderTest = path.join("steps-report", this.testNo.toString());
+        const folderTest = path.join("specs-report", this.testNo.toString());
         const groupKey = path.relative(this.testDir, test.location.file);
 
         // Ensure an array exists for this group
@@ -78,17 +80,26 @@ class SpecsReporter implements Reporter {
                 name: attachment.name ?? '' 
             })) ?? [];
         
-        // Copy the attachments to the folder with the custom report
+        // Store attachment info for later copying (after all tests complete)
+        this.pendingAttachments.push({
+            testNum: this.testNo,
+            folderTest: folderTest,
+            attachments: attachments,
+            result: result
+        });
+
+        // For now, just use the attachment names without copying files
         const reportAttachments = attachments.map(attachment => ({
-            path: this.fileHelper.copyFileToResults(folderTest, attachment.path),
+            path: attachment.name, // Use name instead of copied path
             name: attachment.name
         }));
 
-        // Copy the video
-        const videoPath = this.fileHelper.copyVideo(result, folderTest);
-
-        // Copy the screenshots
-        const screenshotPaths = this.fileHelper.copyScreenshots(result, folderTest);
+        // For video and screenshots, just use the names for now
+        const videoAttachment = result.attachments?.find((att: any) => att.name === 'video');
+        const videoPath = videoAttachment?.name || '';
+        
+        const screenshotAttachments = result.attachments?.filter((att: any) => att.name === 'screenshot') ?? [];
+        const screenshotPaths = screenshotAttachments.map((att: any) => att.name || '');
 
         // Get the errors
         const errors = result.errors?.map(error => this.htmlHelper.ansiToHtml(error.message ?? 'No errors')) ?? [];
@@ -158,6 +169,50 @@ class SpecsReporter implements Reporter {
     }
 
     async onEnd(result: FullResult) {
+        // Copy all pending attachments now that all tests are complete
+        for (const pending of this.pendingAttachments) {
+            try {
+                const copiedFiles: string[] = [];
+                
+                // Copy attachments
+                for (const attachment of pending.attachments) {
+                    if (attachment.path) {
+                        const copiedFile = this.fileHelper.copyFileToResults(pending.folderTest, attachment.path);
+                        if (copiedFile) {
+                            copiedFiles.push(copiedFile);
+                        }
+                    }
+                }
+                
+                // Copy video
+                const videoAttachment = pending.result.attachments?.find((att: any) => att.name === 'video');
+                if (videoAttachment?.path) {
+                    const copiedFile = this.fileHelper.copyFileToResults(pending.folderTest, videoAttachment.path);
+                    if (copiedFile) {
+                        copiedFiles.push(copiedFile);
+                    }
+                }
+                
+                // Copy screenshots
+                const screenshotAttachments = pending.result.attachments?.filter((att: any) => att.name === 'screenshot') ?? [];
+                for (const screenshot of screenshotAttachments) {
+                    if (screenshot.path) {
+                        const copiedFile = this.fileHelper.copyFileToResults(pending.folderTest, screenshot.path);
+                        if (copiedFile) {
+                            copiedFiles.push(copiedFile);
+                        }
+                    }
+                }
+                
+                // Update the HTML file to use correct filenames
+                if (copiedFiles.length > 0) {
+                    await this.updateTestHtmlWithCorrectFilenames(pending.folderTest, pending.result.attachments || []);
+                }
+            } catch (error) {
+                console.warn(`Failed to copy attachments for test ${pending.testNum}:`, error);
+            }
+        }
+        
         const folderTest = this.fileHelper.folderResults;
         const summaryName = 'index.html';
         const summaryPath = path.join(folderTest, summaryName);
@@ -168,6 +223,38 @@ class SpecsReporter implements Reporter {
         this.summary.statusIcon = statusIcon;
         
         await this.htmlHelper.replaceTags('summary.html', { results: this.summary }, folderTest, summaryPath);
+    }
+    
+    private async updateTestHtmlWithCorrectFilenames(folderTest: string, attachments: any[]) {
+        const htmlPath = path.join(folderTest, 'index.html');
+        if (!fs.existsSync(htmlPath)) return;
+        
+        let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        
+        // Update screenshot references
+        const screenshotAttachment = attachments.find((att: any) => att.name === 'screenshot');
+        if (screenshotAttachment?.path) {
+            const screenshotName = path.basename(screenshotAttachment.path);
+            htmlContent = htmlContent.replace(/src="screenshot"/g, `src="${screenshotName}"`);
+        }
+        
+        // Update video references
+        const videoAttachment = attachments.find((att: any) => att.name === 'video');
+        if (videoAttachment?.path) {
+            const videoName = path.basename(videoAttachment.path);
+            htmlContent = htmlContent.replace(/src="video"/g, `src="${videoName}"`);
+            htmlContent = htmlContent.replace(/href="video"/g, `href="${videoName}"`);
+        }
+        
+        // Update attachment links
+        for (const attachment of attachments) {
+            if (attachment.path && attachment.name !== 'video' && attachment.name !== 'screenshot') {
+                const fileName = path.basename(attachment.path);
+                htmlContent = htmlContent.replace(new RegExp(`href="${attachment.name}"`, 'g'), `href="${fileName}"`);
+            }
+        }
+        
+        fs.writeFileSync(htmlPath, htmlContent);
     }
 }
 

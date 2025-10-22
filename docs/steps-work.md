@@ -1,7 +1,7 @@
-# Steps Reporter Sidebar Enhancement Plan
+# Specs Reporter Sidebar Enhancement Plan
 
 ## Overview
-Add a sidebar navigation to the Steps reporter similar to Ortoni and Allure, with Dashboard and Tests sections that dynamically show content in the main area.
+Add a sidebar navigation to the Specs reporter similar to Ortoni and Allure, with Dashboard and Tests sections that dynamically show content in the main area.
 
 ## Current State Analysis
 - **Summary Template**: `src/reporter/templates/summary.html` - Contains dashboard with charts and test groups
@@ -44,7 +44,7 @@ Add a sidebar navigation to the Steps reporter similar to Ortoni and Allure, wit
 ### 2. Sidebar Implementation
 
 #### Sidebar Components:
-- **Logo/Header**: "Steps Reporter" branding
+- **Logo/Header**: "Specs Reporter" branding
 - **Navigation Items**:
   - Dashboard (with dashboard icon)
   - Tests (with list icon)

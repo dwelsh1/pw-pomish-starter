@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.3] - 2025-01-21
 
 ### Added
-- **Steps Reporter Sidebar Navigation**: Added sidebar with Dashboard and Tests navigation
+- **Specs Reporter Sidebar Navigation**: Added sidebar with Dashboard and Tests navigation
 - **In-Page Test Details**: Test details now load within the main content area instead of separate pages
 - **Enhanced Copy Prompt Integration**: Global prompt data storage for seamless Copy Prompt functionality
 - **Responsive Sidebar Design**: Mobile-friendly sidebar with collapsible navigation
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Passing Test Support**: Proper display for passing tests with minimal content
 
 ### Changed
-- **Steps Reporter Architecture**: Restructured from multi-page to single-page application
+- **Specs Reporter Architecture**: Restructured from multi-page to single-page application
 - **Test Detail Navigation**: Eliminated "Back to Summary" buttons and separate test pages
 - **Copy Prompt Data Storage**: Moved from individual test files to global JavaScript object
 - **Enhanced Button Removal**: Improved regex patterns for removing unwanted navigation elements
@@ -132,7 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Performance**: Minimal overhead - prompts generated only for failed tests
 - **Browser Compatibility**: Works across modern and older browsers with fallback support
 - **Cross-Platform**: Compatible with Windows, macOS, and Linux
-- **Integration**: Currently available in Custom Steps Reporter, with plans for other reporters
+- **Integration**: Currently available in Custom Specs Reporter, with plans for other reporters
 
 ## [0.2.0] - 2025-01-27
 
@@ -178,7 +178,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive documentation in `docs/` folder
 - Three reporting systems: Ortoni, Allure, and Custom Steps reporters
 - Multi-browser testing support (Chrome, Edge, Safari)
-- Custom Steps Reporter with stakeholder-friendly interface
+- Custom Specs Reporter with stakeholder-friendly interface
 - Dynamic reporter switching via environment variables
 - Enhanced debugging capabilities and techniques
 - Comprehensive test execution guide

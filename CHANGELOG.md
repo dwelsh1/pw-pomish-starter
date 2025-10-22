@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-01-21
+
+### Added
+- **Specs Reporter Rename**: Complete rebranding from Steps Reporter to Specs Reporter
+- **Enhanced Attachment Support**: Fixed download issues for error-context.md and trace.zip files
+- **Comprehensive File Type Support**: Added support for .md, .zip, .txt, .log files in path correction
+- **Improved Documentation**: Updated all documentation files to reflect new naming convention
+
+### Changed
+- **File Structure**: `steps-report/` → `specs-report/` directory structure
+- **Class Names**: `StepReporter` → `SpecsReporter` class implementation
+- **Template Updates**: Updated all HTML templates with new Specs Reporter branding
+- **Script Compatibility**: Maintained backward compatibility for npm scripts
+
+### Fixed
+- **Attachment Downloads**: Resolved 404 errors when downloading attachments in dynamic test loading
+- **Unit Test Stability**: Fixed file system conflicts and improved cleanup handling
+- **Duplicate File Issues**: Removed duplicate test files causing conflicts
+- **Path Correction**: Enhanced regex patterns for all file types in dynamic content loading
+
+### Technical Details
+- **All Unit Tests Passing**: 54/54 tests now pass consistently
+- **Enhanced Error Handling**: Improved cleanup and retry mechanisms
+- **File System Stability**: Resolved race conditions in test execution
+- **Documentation Consistency**: All docs now use consistent Specs Reporter terminology
+
 ## [0.3.3] - 2025-01-21
 
 ### Added

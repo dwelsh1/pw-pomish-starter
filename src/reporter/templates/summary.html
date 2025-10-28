@@ -195,10 +195,68 @@
             color: #7f8c8d;
         }
 
+        /* Multi-select tags styling */
+        .filter-group select[multiple] {
+            min-height: 100px;
+        }
+
+        .filter-mode-toggle {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .filter-mode-toggle label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #bdc3c7;
+        }
+
+        .filter-mode-toggle input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .filter-mode-toggle input[type="radio"]:checked + span {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        /* Active tag filters display */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .active-filter-chip {
+            background: #3498db;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .active-filter-chip:hover {
+            background: #2980b9;
+        }
+
+        .active-filter-chip .material-symbols-outlined {
+            font-size: 14px;
+        }
+
         /* Filter Checkboxes */
         .filter-checkboxes {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
         
@@ -206,11 +264,10 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             cursor: pointer;
             font-size: 0.85rem;
             color: #bdc3c7;
-            margin-bottom: 8px;
             padding: 4px 0;
         }
 
@@ -225,10 +282,10 @@
         }
 
         .checkmark {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            border: 3px solid #4a5f7a;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid #4a5f7a;
             position: relative;
             transition: all 0.3s ease;
             background-color: #2c3e50;
@@ -253,7 +310,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
         }
 
@@ -517,6 +574,52 @@
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-bottom: 30px;
+        }
+        
+        .tag-stats-container {
+            margin-bottom: 30px;
+        }
+        
+        .tag-stats-container .stat-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tag-stats-container .stat-card h3 .material-symbols-outlined {
+            font-size: 24px;
+            color: #3498db;
+        }
+        
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag-stat-item {
+            background: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .tag-stat-item .tag-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .tag-stat-item .tag-count {
+            background: #3498db;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
 
         .chart-card {
@@ -1222,9 +1325,20 @@
                 <!-- Tags Filter -->
                 <div class="filter-group">
                     <label>Tags</label>
-                    <select id="tags-filter" onchange="applyFilters()">
+                    <select id="tags-filter" multiple size="4" onchange="applyFilters()">
                         <option value="">All Tags</option>
                     </select>
+                    <div class="filter-mode-toggle">
+                        <label>
+                            <input type="radio" name="tag-filter-mode" value="AND" checked onchange="applyFilters()">
+                            <span>AND (all selected)</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="tag-filter-mode" value="OR" onchange="applyFilters()">
+                            <span>OR (any selected)</span>
+                        </label>
+                    </div>
+                    <div class="active-filters" id="active-tag-filters"></div>
                 </div>
                 
                 <!-- Duration Filter -->
@@ -1314,6 +1428,17 @@
                         <div class="chart-card">
                             <h3>Top 10 Longest Tests</h3>
                             <div id="barChart"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tag Statistics -->
+                    <div class="tag-stats-container">
+                        <div class="stat-card">
+                            <h3>
+                                <span class="material-symbols-outlined">label</span>
+                                Tag Statistics
+                            </h3>
+                            <div id="tag-stats"></div>
                         </div>
                     </div>
                 </div>
@@ -1492,7 +1617,8 @@
             search: '',
             status: ['passed', 'failed', 'skipped', 'flaky'],
             browser: '',
-            tags: '',
+            tags: [],
+            tagMode: 'AND',
             duration: ''
         };
         
@@ -1536,9 +1662,86 @@
                 tagsSelect.appendChild(option);
             });
             
+            // Load saved filters from localStorage
+            loadFiltersFromStorage();
+            
             // Mark filters as initialized
             filtersInitialized = true;
             console.log('Filters initialized, ready to apply');
+        }
+        
+        // Save filters to localStorage
+        function saveFiltersToStorage() {
+            const filtersToSave = {
+                search: currentFilters.search,
+                status: currentFilters.status,
+                browser: currentFilters.browser,
+                tags: currentFilters.tags,
+                tagMode: currentFilters.tagMode,
+                duration: currentFilters.duration
+            };
+            localStorage.setItem('specs-filters', JSON.stringify(filtersToSave));
+        }
+        
+        // Load filters from localStorage
+        function loadFiltersFromStorage() {
+            const savedFilters = localStorage.getItem('specs-filters');
+            if (savedFilters) {
+                try {
+                    const parsed = JSON.parse(savedFilters);
+                    
+                    // Restore search
+                    if (parsed.search) {
+                        document.getElementById('search-input').value = parsed.search;
+                        currentFilters.search = parsed.search;
+                    }
+                    
+                    // Restore status checkboxes
+                    if (parsed.status && Array.isArray(parsed.status)) {
+                        currentFilters.status = parsed.status;
+                        ['passed', 'failed', 'skipped', 'flaky'].forEach(status => {
+                            const checkbox = document.getElementById(`filter-${status}`);
+                            if (checkbox) {
+                                checkbox.checked = parsed.status.includes(status);
+                            }
+                        });
+                    }
+                    
+                    // Restore browser
+                    if (parsed.browser) {
+                        document.getElementById('browser-filter').value = parsed.browser;
+                        currentFilters.browser = parsed.browser;
+                    }
+                    
+                    // Restore tags (multi-select)
+                    if (parsed.tags && Array.isArray(parsed.tags)) {
+                        currentFilters.tags = parsed.tags;
+                        parsed.tags.forEach(tag => {
+                            const options = Array.from(document.getElementById('tags-filter').options);
+                            const optionToSelect = options.find(opt => opt.value === tag);
+                            if (optionToSelect) {
+                                optionToSelect.selected = true;
+                            }
+                        });
+                    }
+                    
+                    // Restore tag mode
+                    if (parsed.tagMode) {
+                        currentFilters.tagMode = parsed.tagMode;
+                        document.querySelector(`input[name="tag-filter-mode"][value="${parsed.tagMode}"]`).checked = true;
+                    }
+                    
+                    // Restore duration
+                    if (parsed.duration) {
+                        document.getElementById('duration-filter').value = parsed.duration;
+                        currentFilters.duration = parsed.duration;
+                    }
+                    
+                    console.log('Filters loaded from localStorage:', parsed);
+                } catch (e) {
+                    console.error('Error loading filters from localStorage:', e);
+                }
+            }
         }
 
         // Apply filters to all sections
@@ -1552,8 +1755,20 @@
             // Get current filter values
             currentFilters.search = document.getElementById('search-input').value.toLowerCase();
             currentFilters.browser = document.getElementById('browser-filter').value;
-            currentFilters.tags = document.getElementById('tags-filter').value;
+            
+            // Get selected tags (multi-select)
+            const tagsSelect = document.getElementById('tags-filter');
+            currentFilters.tags = Array.from(tagsSelect.selectedOptions)
+                .filter(option => option.value !== '')
+                .map(option => option.value);
+            
+            // Get tag filter mode (AND/OR)
+            currentFilters.tagMode = document.querySelector('input[name="tag-filter-mode"]:checked').value;
+            
             currentFilters.duration = document.getElementById('duration-filter').value;
+            
+            // Update active tag filters display
+            updateActiveTagFilters();
             
             // Get selected statuses
             currentFilters.status = [];
@@ -1562,6 +1777,9 @@
                     currentFilters.status.push(status);
                 }
             });
+            
+            // Save filters to localStorage
+            saveFiltersToStorage();
 
             // Apply filters to all sections
             filterDashboard();
@@ -1721,9 +1939,39 @@
         function hasActiveFilters() {
             return currentFilters.search !== '' ||
                    currentFilters.browser !== '' ||
-                   currentFilters.tags !== '' ||
+                   (currentFilters.tags && currentFilters.tags.length > 0) ||
                    currentFilters.duration !== '' ||
                    currentFilters.status.length < 4; // Less than all 4 statuses selected
+        }
+        
+        // Update active tag filters display
+        function updateActiveTagFilters() {
+            const activeFiltersDiv = document.getElementById('active-tag-filters');
+            activeFiltersDiv.innerHTML = ''; // Clear existing chips
+            
+            if (currentFilters.tags && currentFilters.tags.length > 0) {
+                currentFilters.tags.forEach(tag => {
+                    const chip = document.createElement('div');
+                    chip.className = 'active-filter-chip';
+                    chip.innerHTML = `
+                        @${tag}
+                        <span class="material-symbols-outlined" onclick="removeTagFilter('${tag}', event)">close</span>
+                    `;
+                    activeFiltersDiv.appendChild(chip);
+                });
+            }
+        }
+        
+        // Remove a tag filter
+        function removeTagFilter(tag, event) {
+            event.stopPropagation();
+            const tagsSelect = document.getElementById('tags-filter');
+            const options = Array.from(tagsSelect.options);
+            const optionToDeselect = options.find(opt => opt.value === tag);
+            if (optionToDeselect) {
+                optionToDeselect.selected = false;
+                applyFilters();
+            }
         }
 
         // Check if a test item matches current filters (for Test Specs section)
@@ -1835,17 +2083,26 @@
                 return false;
             }
             
-            // Tags filter - check if test has the selected tag
-            if (currentFilters.tags && currentFilters.tags !== '') {
+            // Tags filter - check if test has the selected tags (multi-select with AND/OR logic)
+            if (currentFilters.tags && currentFilters.tags.length > 0) {
                 // For Tests section, we need to get tags from window.testData
                 if (testNum && window.testData) {
                     const testData = Object.values(window.testData.groupedResults).flat().find(t => t.num === testNum);
-                    if (testData && testData.tags) {
-                        // Remove @ prefix from filter value for comparison (tags are stored without @)
-                        const tagToMatch = currentFilters.tags.replace('@', '');
-                        if (!testData.tags.includes(tagToMatch)) {
-                            console.log('Failed tags filter:', tagToMatch, 'not in', testData.tags);
-                            return false;
+                    if (testData && testData.tags && Array.isArray(testData.tags)) {
+                        if (currentFilters.tagMode === 'AND') {
+                            // Test must have ALL selected tags
+                            const hasAllTags = currentFilters.tags.every(tag => testData.tags.includes(tag));
+                            if (!hasAllTags) {
+                                console.log('Failed AND tags filter: test does not have all tags', testData.tags, 'vs', currentFilters.tags);
+                                return false;
+                            }
+                        } else {
+                            // OR mode: test must have ANY of the selected tags
+                            const hasAnyTag = currentFilters.tags.some(tag => testData.tags.includes(tag));
+                            if (!hasAnyTag) {
+                                console.log('Failed OR tags filter: test has none of the selected tags', testData.tags, 'vs', currentFilters.tags);
+                                return false;
+                            }
                         }
                     } else {
                         console.log('Failed tags filter: no tags data');
@@ -1925,13 +2182,23 @@
         function clearFilters() {
             document.getElementById('search-input').value = '';
             document.getElementById('browser-filter').value = '';
-            document.getElementById('tags-filter').value = '';
+            
+            // Clear all selected tags
+            const tagsSelect = document.getElementById('tags-filter');
+            Array.from(tagsSelect.selectedOptions).forEach(option => option.selected = false);
+            
             document.getElementById('duration-filter').value = '';
             
             // Check all status checkboxes
             ['passed', 'failed', 'skipped', 'flaky'].forEach(status => {
                 document.getElementById(`filter-${status}`).checked = true;
             });
+            
+            // Reset filter mode to AND
+            document.querySelector('input[name="tag-filter-mode"][value="AND"]').checked = true;
+            
+            // Clear localStorage
+            localStorage.removeItem('specs-filters');
             
             // Reset filter state
             currentFilters = {
@@ -2514,6 +2781,49 @@
             var barChart = new ApexCharts(document.querySelector("#barChart"), barChartOptions);
             barChart.render();
             console.log('Bar chart rendered');
+            
+            // Render Tag Statistics
+            renderTagStatistics();
+        }
+        
+        function renderTagStatistics() {
+            const tagStatsDiv = document.getElementById('tag-stats');
+            if (!tagStatsDiv) return;
+            
+            // Collect all tags from test data
+            const tagCounts = new Map();
+            
+            Object.values(window.testData.groupedResults).forEach(tests => {
+                tests.forEach(test => {
+                    if (test.tags && Array.isArray(test.tags)) {
+                        test.tags.forEach(tag => {
+                            const currentCount = tagCounts.get(tag) || 0;
+                            tagCounts.set(tag, currentCount + 1);
+                        });
+                    }
+                });
+            });
+            
+            // Convert to array and sort by count (descending)
+            const sortedTags = Array.from(tagCounts.entries())
+                .sort((a, b) => b[1] - a[1]);
+            
+            // Create tag list HTML
+            if (sortedTags.length === 0) {
+                tagStatsDiv.innerHTML = '<p style="color: #7f8c8d; text-align: center;">No tags found in tests</p>';
+                return;
+            }
+            
+            const tagListHTML = '<div class="tag-list">' + 
+                sortedTags.map(([tag, count]) => 
+                    `<div class="tag-stat-item">
+                        <span class="tag-name">@${tag}</span>
+                        <span class="tag-count">${count}</span>
+                    </div>`
+                ).join('') + 
+                '</div>';
+            
+            tagStatsDiv.innerHTML = tagListHTML;
         }
     </script>
 </body>

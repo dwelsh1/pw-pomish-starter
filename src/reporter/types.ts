@@ -16,6 +16,14 @@ export enum TestStatusIcon {
     timedOut = 'hourglass_empty'
 }
 
+export interface TagInfo {
+    original: string;
+    normalized: string;
+    category: string | null;
+    color: string;
+    icon: string;
+}
+
 export interface TestResults {
     num: number;
     title: string;
@@ -25,6 +33,7 @@ export interface TestResults {
     description?: string;
     status: string;
     tags: string[];
+    tagInfo?: TagInfo[]; // Enriched tag information with category and styling
     steps: string[];
     preConditions: string[];
     postConditions: string[];

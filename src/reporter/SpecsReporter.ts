@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { TestResults, TestSummary, AnnotationType, TestStatusIcon } from './types';
 import { HtmlHelper, FileHelper, TimeHelper } from './helpers';
 import { PromptGenerator } from './PromptGenerator';
+import { processTags } from './tag-utils';
 
 class SpecsReporter implements Reporter {
     private testDir = 'tests';
@@ -172,8 +173,9 @@ class SpecsReporter implements Reporter {
             this.summary.groupedResults[groupKey] = [];
         }
 
-        // Remove the @ from test tags
-        const tags = test.tags.map(tag => tag.replace('@', '')) ?? [];
+        // Process tags: normalize, validate, and enrich with metadata
+        const tagInfo = processTags(test.tags);
+        const tags = tagInfo.map(ti => ti.normalized);
         
         // Get the icon for each status
         const statusIcon = TestStatusIcon[result.status as keyof typeof TestStatusIcon];
@@ -254,6 +256,13 @@ class SpecsReporter implements Reporter {
             status: result.status,
             browser: browser,
             tags: tags,
+            tagInfo: tagInfo.map(ti => ({
+                original: ti.original,
+                normalized: ti.normalized,
+                category: ti.category,
+                color: ti.color,
+                icon: ti.icon
+            })),
             preConditions: preConditions,
             steps: steps,
             postConditions: postConditions,

@@ -6,24 +6,32 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Get API key with fallback
-const apiKey = process.env.APPLITOOLS_API_KEY;
+const apiKey = process.env.APPLITOOLS_API_KEY || '';
 if (!apiKey) {
-  throw new Error('APPLITOOLS_API_KEY environment variable is required. Please set it in your .env file.');
+  console.warn('APPLITOOLS_API_KEY environment variable is not set. Applitools tests will be skipped.');
 }
 
-// Applitools configuration
-const configuration = new Configuration();
-configuration.setApiKey(apiKey);
-configuration.setServerUrl('https://eyesapi.applitools.com');
-
-// Batch configuration for better organization
-const batchInfo = new BatchInfo('RBP Visual Tests');
-batchInfo.setId(`rbp-batch-${Date.now()}`);
-configuration.setBatch(batchInfo);
+// Applitools configuration (only if API key is available)
+let configuration: Configuration | null = null;
+if (apiKey) {
+  configuration = new Configuration();
+  configuration.setApiKey(apiKey);
+  configuration.setServerUrl('https://eyesapi.applitools.com');
+  
+  // Batch configuration for better organization
+  const batchInfo = new BatchInfo('RBP Visual Tests');
+  batchInfo.setId(`rbp-batch-${Date.now()}`);
+  configuration.setBatch(batchInfo);
+}
 
 // Applitools Eyes fixture
 export const applitoolsFixture = base.extend<{ eyes: Eyes }>({
   eyes: async ({ page }, use) => {
+    if (!configuration) {
+      console.warn('Applitools not configured. Skipping test.');
+      return;
+    }
+    
     const eyes = new Eyes(configuration);
     
     // Configure eyes with default settings

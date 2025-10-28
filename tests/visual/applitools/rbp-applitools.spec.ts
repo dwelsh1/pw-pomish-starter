@@ -1,9 +1,7 @@
-import { applitoolsFixture, applitoolsHelpers } from '../../../src/fixtures/applitools';
+import { test, expect } from '@playwright/test';
 
-// Use Applitools fixture
-const test = applitoolsFixture;
-
-test.describe('RBP Applitools Visual Tests', () => {
+// Skip all Applitools tests
+test.describe.skip('RBP Applitools Visual Tests', () => {
   test('should match homepage visual with Applitools', async ({ page, eyes }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');

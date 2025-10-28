@@ -1,7 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { applitoolsFixture, applitoolsHelpers } from '../../../src/fixtures/applitools';
 
-test.describe.skip('Applitools Visual Failure Demonstration', () => {
-  test('should fail due to contact form H1 color change with Applitools', async ({ page }) => {
+// Use Applitools fixture
+const test = applitoolsFixture;
+
+test.describe('Applitools Visual Failure Demonstration', () => {
+  test('should fail due to contact form H1 color change with Applitools', async ({ page, eyes }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -23,7 +26,10 @@ test.describe.skip('Applitools Visual Failure Demonstration', () => {
     // Wait a moment for the style to apply
     await page.waitForTimeout(1000);
     
-    // Applitools is disabled
-    expect(true).toBe(true);
+    // Open eyes for this test
+    await applitoolsHelpers.openEyes(eyes, page, 'Contact Form Color Change Failure');
+    
+    // Check full window - this should fail because the color changed
+    await applitoolsHelpers.checkWindow(eyes, 'Contact Form with Green H1');
   });
 });

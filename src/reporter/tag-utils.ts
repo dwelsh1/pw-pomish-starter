@@ -70,7 +70,7 @@ export function groupTagsByCategory(tags: NormalizedTag[]): Record<string, Norma
  * Get unique tags from all tests
  */
 export function getUniqueTags(tags: string[]): string[] {
-    return [...new Set(tags.map(tag => normalizeTag(tag)))].sort();
+    return Array.from(new Set(tags.map(tag => normalizeTag(tag)))).sort();
 }
 
 /**

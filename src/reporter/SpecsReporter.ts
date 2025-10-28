@@ -63,7 +63,7 @@ class SpecsReporter implements Reporter {
         }
         
         // Remove duplicates
-        const uniqueBrowsers = [...new Set(browsers)];
+        const uniqueBrowsers = Array.from(new Set(browsers));
         
         return {
             os: this.formatOSName(os),
@@ -174,7 +174,7 @@ class SpecsReporter implements Reporter {
         }
 
         // Process tags: normalize, validate, and enrich with metadata
-        const tagInfo = processTags(test.tags);
+        const tagInfo = processTags(test.tags || []);
         const tags = tagInfo.map(ti => ti.normalized);
         
         // Get the icon for each status

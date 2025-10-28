@@ -126,7 +126,7 @@ export function getAllTags(): string[] {
     Object.values(TagCategories).forEach(categoryTags => {
         allTags.push(...categoryTags);
     });
-    return [...new Set(allTags)].sort();
+    return Array.from(new Set(allTags)).sort();
 }
 
 /**

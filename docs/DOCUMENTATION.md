@@ -35,12 +35,12 @@ This project includes comprehensive documentation for all four reporting systems
 - CI/CD integration examples
 - Advanced configuration options
 
-### **[STEPS_SETUP.md](./STEPS_SETUP.md)**
-- Custom Steps Reporter implementation
+### **[specs-reporter.md](./specs-reporter.md)**
+- Specs Reporter implementation
 - Stakeholder-friendly reporting features
-- Test annotation system
-- Template customization
-- Advanced features and integration
+- Environment information tracking
+- Advanced filtering and navigation
+- AI-powered Copy Prompt feature
 
 ### **[MONOCART_SETUP.md](./MONOCART_SETUP.md)**
 - Monocart Reporter setup and advanced features
@@ -76,7 +76,7 @@ This project includes comprehensive documentation for all four reporting systems
 # All tests with different reporters
 npm run test:ortoni    # Ortoni Report
 npm run test:allure    # Allure Report
-npm run test:steps     # Custom Steps Report
+npm run test:specs     # Custom Steps Report
 npm run test:monocart  # Monocart Report
 
 # Specific browsers
@@ -112,7 +112,7 @@ npm run allure:generate     # Static
 npm run allure:open         # Open static
 
 # Custom Steps Reports
-npm run steps:open
+npm run specs:open
 ```
 
 ## 🔧 Configuration Files
@@ -150,7 +150,7 @@ npm run steps:open
 3. **Choose your reporter** and read the specific setup guide:
    - [ORTONI_SETUP.md](./ORTONI_SETUP.md) for quick, lightweight reporting
    - [ALLURE_SETUP.md](./ALLURE_SETUP.md) for detailed analysis and CI/CD
-   - [STEPS_SETUP.md](./STEPS_SETUP.md) for stakeholder presentations
+   - [specs-reporter.md](./specs-reporter.md) for stakeholder presentations
 
 ## 🆘 Need Help?
 

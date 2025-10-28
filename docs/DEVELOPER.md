@@ -79,7 +79,7 @@ npm run codegen       # Generate tests for RBP
 # Reporter-specific commands
 npm run test:ortoni   # Run with Ortoni reporter
 npm run test:allure   # Run with Allure reporter
-npm run test:steps    # Run with Custom Steps reporter
+npm run test:specs    # Run with Specs reporter
 ```
 
 ## Debugging Failed Tests
@@ -207,7 +207,7 @@ npm test -- --video=on
 npm test -- --timeout=30000
 ```
 
-## Steps Reporter Sidebar Enhancement
+## Specs Reporter Sidebar Enhancement
 
 The Steps Reporter has been enhanced with a modern sidebar navigation system that transforms it from a multi-page application to a single-page application (SPA) with seamless navigation.
 
@@ -278,7 +278,7 @@ window.testPrompts = {
 
 ## AI-Powered Copy Prompt Feature
 
-The Custom Steps Reporter includes an innovative **Copy Prompt** feature that generates AI-friendly prompts for failed tests, making it easy to get debugging assistance from AI tools like Cursor, ChatGPT, or Claude.
+The Specs Reporter includes an innovative **Copy Prompt** feature that generates AI-friendly prompts for failed tests, making it easy to get debugging assistance from AI tools like Cursor, ChatGPT, or Claude.
 
 ### How It Works
 
@@ -420,7 +420,7 @@ export interface TestResults {
 
 ### Usage Workflow
 
-1. **Run Tests**: Execute tests with Custom Steps reporter
+1. **Run Tests**: Execute tests with Specs Reporter
 2. **View Failed Tests**: Navigate to failed test pages
 3. **Copy Prompt**: Click appropriate Copy Prompt button
 4. **Paste to AI**: Paste into Cursor, ChatGPT, or other AI tools
@@ -468,7 +468,7 @@ export interface TestResults {
 
 ### Integration with Other Reporters
 
-Currently available in **Custom Steps Reporter**, **Ortoni Reporter**, and **Allure Reporter**. Future releases will include:
+Currently available in **Specs Reporter**, **Ortoni Reporter**, and **Allure Reporter**. Future releases will include:
 - **Monocart Reporter**: Integration with Monocart reports
 
 This feature significantly enhances the debugging experience by providing instant access to AI-powered assistance directly from test reports.
@@ -571,8 +571,8 @@ npm run allure:open
 - **Static Report**: `allure-report/` (HTML files)
 - **Dynamic Server**: Temporary directory
 
-### 3. Custom Steps Reporter
-**Best for**: Stakeholder presentations, detailed documentation, step-by-step analysis
+### 3. Specs Reporter
+**Best for**: Stakeholder presentations, detailed documentation, environment tracking, advanced filtering
 
 #### Features
 - 👥 **Stakeholder-friendly** interface with clear descriptions
@@ -583,24 +583,24 @@ npm run allure:open
 
 #### Usage
 ```bash
-# Run tests with Custom Steps reporting
-npm run test:steps
+# Run tests with Specs reporting
+npm run test:specs
 
 # View report
-npm run steps:open
+npm run specs:open
 ```
 
 #### Report Location
-- **Summary**: `steps-report/summary.html`
-- **Individual Tests**: `steps-report/1/`, `steps-report/2/`, etc.
+- **Summary**: `specs-report/index.html`
+- **Individual Tests**: `specs-report/[test-path]/`
 
 ### Choosing the Right Reporter
 
 | Scenario | Recommended Reporter | Why |
 |----------|---------------------|-----|
-| **Development** | Ortoni | Fast, auto-opens, quick feedback |
+| **Development** | Specs | Fast, advanced filtering, environment info |
 | **CI/CD** | Allure | Rich analytics, artifact integration |
-| **Stakeholder Demo** | Custom Steps | Clear, non-technical, detailed steps |
+| **Stakeholder Demo** | Specs | Clear, non-technical, detailed steps, environment tracking |
 | **Debugging** | Allure | Comprehensive error details and traces |
 | **Performance Analysis** | Ortoni | Quick charts and trends |
 
@@ -612,7 +612,7 @@ All reporters are configured in `playwright.config.ts` and can be switched using
 # Switch reporters
 REPORTER_TYPE=ortoni npm test
 REPORTER_TYPE=allure npm test
-REPORTER_TYPE=steps npm test
+REPORTER_TYPE=specs npm test
 ```
 
 ## Enhanced Reporting with ortoni-report
@@ -818,9 +818,9 @@ The ortoni-report works seamlessly with CI environments:
 - Run tests multiple times to identify flaky behavior
 
 ### Reporting
+- Use **Specs** for comprehensive testing with advanced filtering and environment tracking
 - Use **Ortoni** for quick development feedback
 - Use **Allure** for detailed analysis and CI/CD integration
-- Use **Custom Steps** for stakeholder presentations
 - Review test attachments (screenshots, videos) to understand failure patterns
 - Track test stability over time using historical data
 

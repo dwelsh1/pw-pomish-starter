@@ -41,6 +41,15 @@ export interface TestResults {
     };
 }
 
+export interface EnvironmentInfo {
+    os?: string;
+    nodeVersion?: string;
+    playwrightVersion?: string;
+    browsers?: string[];
+    timestamp?: string;
+    runner?: string;
+}
+
 export interface TestSummary {
     duration: string;
     status: string;
@@ -51,4 +60,5 @@ export interface TestSummary {
     totalFlaky: number;
     totalSkipped: number;
     groupedResults: Record<string, TestResults[]>;
+    environment?: EnvironmentInfo;
 }

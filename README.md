@@ -18,9 +18,9 @@ A comprehensive Playwright + TypeScript starter that targets the **Restful Booke
 - **UI tests** with a **POM‑ish** approach (central selectors + tiny helpers, no bloated page classes)
 - **Enhanced API tests** with pw-api-plugin for beautiful visualization and playwright-schema-validator for contract validation
 - **Dual visual testing** with both Playwright screenshots and Applitools AI-powered comparison
-- **Four powerful reporting systems** with easy switching between Ortoni, Allure, Custom Steps, and Monocart reporters
-- **AI-powered Copy Prompt feature** for instant debugging assistance with failed tests (Custom Steps, Ortoni, and Allure reporters)
-- **Enhanced Specs Reporter** with sidebar navigation, in-page test details, and responsive design
+- **Four powerful reporting systems** with easy switching between Specs Reporter (default), Ortoni, Allure, and Monocart reporters
+- **AI-powered Copy Prompt feature** for instant debugging assistance with failed tests (Specs Reporter, Ortoni, and Allure reporters)
+- **Enhanced Specs Reporter** with sidebar navigation, in-page test details, environment information, and responsive design
 - **Multi-browser testing** on Chrome, Edge, Safari, and mobile browsers
 
 ## 🚀 Quick Start
@@ -29,14 +29,14 @@ A comprehensive Playwright + TypeScript starter that targets the **Restful Booke
 npm ci
 npm run install:playwright
 
-# Run tests with default reporter (Ortoni)
+# Run tests with default reporter (Specs Reporter)
 npm test
 
 # Run tests with specific reporter
-npm run test:ortoni    # Ortoni Report
-npm run test:allure    # Allure Report
-npm run test:steps     # Custom Steps Report
-npm run test:monocart  # Monocart Report
+npm run test:specs     # Specs Reporter (default)
+npm run test:ortoni   # Ortoni Report
+npm run test:allure   # Allure Report
+npm run test:monocart # Monocart Report
 
 # Visual testing options
 npm run test:visual           # Playwright screenshots
@@ -53,18 +53,22 @@ npm run test:ui
 
 ## 📊 Reporting Systems
 
-This project supports **four different reporting systems** for comprehensive test result visualization:
+This project supports **four different reporting systems** with **Specs Reporter as the default** for comprehensive test result visualization:
 
 | Reporter | Best For | Speed | Features |
 |----------|---------|-------|----------|
+| **Specs** | Stakeholders, environment tracking | 🚀 Fast | Sidebar nav, filtering, AI prompts, env info |
 | **Ortoni** | Quick feedback, lightweight | ⚡ Fast | Charts, history, auto-open |
 | **Allure** | Detailed analysis, CI/CD | 🐌 Slower | Rich reports, trends, categories |
-| **Custom Steps** | Stakeholders, documentation | 🐌 Slower | Step-by-step, dynamic charts |
 | **Monocart** | Large test suites, performance | ⚡⚡⚡ Very Fast | Tree grid, ultra-fast filtering |
 
 ### Quick Reporter Commands
 ```bash
-# Ortoni Reports (Default)
+# Specs Reports (Default)
+npm run test:specs
+npm run specs:open
+
+# Ortoni Reports
 npm run test:ortoni
 npm run show-ortoni-report
 
@@ -72,10 +76,6 @@ npm run show-ortoni-report
 npm run test:allure
 npm run allure:serve        # Dynamic (recommended)
 npm run allure:generate     # Static
-
-# Custom Steps Reports
-npm run test:steps
-npm run steps:open
 
 # Monocart Reports
 npm run test:monocart
@@ -85,9 +85,9 @@ npm run monocart:open
 ### Reporter Commands Summary
 | Reporter | Run Tests | Open Report |
 |----------|-----------|-------------|
+| **Specs** (Default) | `npm run test:specs` | `npm run specs:open` |
 | **Ortoni** | `npm run test:ortoni` | `npm run show-ortoni-report` |
 | **Allure** | `npm run test:allure` | `npm run allure:serve` |
-| **Steps** | `npm run test:steps` | `npm run steps:open` |
 | **Monocart** | `npm run test:monocart` | `npm run monocart:open` |
 
 ### Visual Testing Commands Summary
@@ -96,6 +96,30 @@ npm run monocart:open
 | **Playwright Screenshots** | `npm run test:visual` | `npm run test:chromium`<br>`npm run test:edge`<br>`npm run test:webkit` |
 | **Applitools AI Comparison** | `npm run test:visual:applitools` | `npm run test:applitools:chromium`<br>`npm run test:applitools:edge`<br>`npm run test:applitools:webkit` |
 | **Both Methods** | `npm run test:visual:all` | Run both Playwright and Applitools |
+
+### 🚀 Quick Test Commands (Specs Reporter)
+| Command | Description | Tests Run |
+|---------|-------------|-----------|
+| **All Tests** | | |
+| `npm run all` | E2E + API (all browsers) | Chrome, Edge, Safari + API |
+| `npm run all:e2e` | E2E tests (all browsers) | Chrome, Edge, Safari |
+| `npm run all:api` | API tests only | API project |
+| `npm run all:visual` | Visual tests (all browsers) | Chrome, Edge, Safari |
+| **Chrome Only** | | |
+| `npm run chrome` | E2E + API (Chrome) | Chrome + API |
+| `npm run chrome:e2e` | E2E tests (Chrome) | Chrome only |
+| `npm run chrome:api` | API tests (Chrome) | API only |
+| `npm run chrome:visual` | Visual tests (Chrome) | Chrome only |
+| **Edge Only** | | |
+| `npm run edge` | E2E + API (Edge) | Edge + API |
+| `npm run edge:e2e` | E2E tests (Edge) | Edge only |
+| `npm run edge:api` | API tests (Edge) | API only |
+| `npm run edge:visual` | Visual tests (Edge) | Edge only |
+| **Safari Only** | | |
+| `npm run safari` | E2E + API (Safari) | Safari + API |
+| `npm run safari:e2e` | E2E tests (Safari) | Safari only |
+| `npm run safari:api` | API tests (Safari) | API only |
+| `npm run safari:visual` | Visual tests (Safari) | Safari only |
 
 ## 📚 Documentation
 
@@ -111,10 +135,10 @@ npm run monocart:open
 ## 🎯 Available Scripts
 
 ### Test Execution
-- `npm test` - Run all tests with default reporting (Ortoni)
+- `npm test` - Run all tests with default reporting (Specs Reporter)
+- `npm run test:specs` - Run tests with Specs reporting
 - `npm run test:ortoni` - Run tests with Ortoni reporting
 - `npm run test:allure` - Run tests with Allure reporting
-- `npm run test:steps` - Run tests with Custom Steps reporting
 - `npm run test:monocart` - Run tests with Monocart reporting
 
 ### Test Types
@@ -144,15 +168,15 @@ npm run monocart:open
 - `npm run codegen` - Generate tests for RBP
 
 ### Report Management
+- `npm run specs:open` - Open Specs report (default)
 - `npm run show-ortoni-report` - Open Ortoni report
 - `npm run allure:serve` - Serve Allure report dynamically
 - `npm run allure:generate` - Generate static Allure report
 - `npm run allure:open` - Open static Allure report
-- `npm run steps:open` - Open Custom Steps report
 
 ### Cleanup
 - `npm run allure:clean` - Clean Allure files
-- `npm run steps:clean` - Clean Custom Steps files
+- `npm run specs:clean` - Clean Specs files
 
 ## 🏗️ Project Structure
 
@@ -162,7 +186,7 @@ npm run monocart:open
 │  ├─ RUNNING_TESTS.md     # Comprehensive test execution guide
 │  ├─ ORTONI_SETUP.md      # Ortoni Report setup
 │  ├─ ALLURE_SETUP.md      # Allure Report setup
-│  ├─ STEPS_SETUP.md       # Specs Reporter setup
+│  ├─ specs-reporter.md    # Specs Reporter setup and features
 │  ├─ DOCUMENTATION.md     # Documentation overview
 │  └─ DEVELOPER.md         # Developer guidelines
 ├─ src/
@@ -241,9 +265,10 @@ npm run monocart:open
 RBP_BASE_URL=https://automationintesting.online npm test
 
 # Switch reporter type
-REPORTER_TYPE=allure npm test
-REPORTER_TYPE=steps npm test
-REPORTER_TYPE=ortoni npm test
+REPORTER_TYPE=specs npm test    # Specs Reporter (default)
+REPORTER_TYPE=ortoni npm test   # Ortoni Report
+REPORTER_TYPE=allure npm test   # Allure Report
+REPORTER_TYPE=monocart npm test # Monocart Report
 ```
 
 ### Playwright Configuration

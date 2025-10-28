@@ -9,7 +9,7 @@ declare const process: NodeJS.Process;
 const RBP_BASE_URL = process.env.RBP_BASE_URL || 'https://automationintesting.online';
 
 // Reporter configuration - can be switched via environment variable
-const REPORTER_TYPE = process.env.REPORTER_TYPE || 'ortoni'; // 'ortoni', 'allure', 'steps', or 'monocart'
+const REPORTER_TYPE = process.env.REPORTER_TYPE || 'specs'; // 'specs', 'ortoni', 'allure', or 'monocart'
 
 // pw-api-plugin configuration
 const LOG_API_UI = process.env.LOG_API_UI !== 'false'; // Enable API details in Playwright UI (default: true)
@@ -51,7 +51,7 @@ const getReporters = (): any[] => {
       }],
       ...baseReporters
     ];
-  } else if (REPORTER_TYPE === 'steps') {
+  } else if (REPORTER_TYPE === 'specs') {
     return [
       ['./src/reporter/SpecsReporter.ts'],
       ...baseReporters
@@ -90,7 +90,7 @@ export default defineConfig({
     baseURL: RBP_BASE_URL,
     trace: process.env.CI ? 'off' : 'retain-on-failure', // Disable trace in CI for speed
     video: process.env.CI ? 'off' : 'retain-on-failure', // Disable video in CI for speed
-    screenshot: 'only-on-failure',
+    screenshot: { mode: 'only-on-failure', fullPage: true }, // Capture full page screenshots
     actionTimeout: process.env.CI ? 10000 : 15000, // Reduced timeout in CI
     navigationTimeout: process.env.CI ? 20000 : 30000, // Reduced timeout in CI
     headless: true,

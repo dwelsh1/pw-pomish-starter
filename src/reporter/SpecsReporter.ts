@@ -20,20 +20,152 @@ class SpecsReporter implements Reporter {
         groupedResults: {}
     };
     private pendingAttachments: Array<{testNum: number, folderTest: string, attachments: any[], result: any}> = [];
+    
     private htmlHelper = new HtmlHelper();
     private fileHelper = new FileHelper();
     private timeHelper = new TimeHelper();
     private promptGenerator = new PromptGenerator();
+    
+    // File-based state sharing
+    private stateFile = path.join('specs-report', 'shared-state.json');
 
     onBegin(config: FullConfig) {
         // Get the testDir from playwright.config.ts or default to tests
         this.testDir = config?.rootDir || 'tests';
+        
+        // Collect environment information
+        this.summary.environment = this.collectEnvironmentInfo(config);
+        
+        // Load existing shared state
+        this.loadSharedState();
+    }
+    
+    private collectEnvironmentInfo(config: FullConfig): any {
+        const os = process.platform;
+        const nodeVersion = process.version;
+        const playwrightVersion = require('@playwright/test/package.json').version;
+        
+        // Get browser information from project names
+        const browsers: string[] = [];
+        if (config.projects) {
+            config.projects.forEach(project => {
+                // Extract browser from project name (e.g., 'rbp-chromium' -> 'chromium')
+                const projectName = project.name || '';
+                if (projectName) {
+                    // Format browser names for display
+                    const browserName = this.formatBrowserName(projectName);
+                    if (browserName && !browsers.includes(browserName)) {
+                        browsers.push(browserName);
+                    }
+                }
+            });
+        }
+        
+        // Remove duplicates
+        const uniqueBrowsers = [...new Set(browsers)];
+        
+        return {
+            os: this.formatOSName(os),
+            nodeVersion: nodeVersion,
+            playwrightVersion: playwrightVersion,
+            browsers: uniqueBrowsers,
+            timestamp: new Date().toISOString(),
+            runner: 'Playwright Test'
+        };
+    }
+    
+    private formatBrowserName(projectName: string): string {
+        // Map common project name patterns to readable browser names
+        if (projectName.includes('webkit') || projectName.includes('safari')) {
+            return 'Safari/WebKit';
+        } else if (projectName.includes('chromium') || projectName.includes('chrome')) {
+            // Check if it's mobile
+            if (projectName.includes('mobile')) {
+                return 'Chrome (Mobile)';
+            }
+            return 'Chrome';
+        } else if (projectName.includes('firefox')) {
+            return 'Firefox';
+        } else if (projectName.includes('edge')) {
+            return 'Edge';
+        }
+        return '';
+    }
+    
+    private formatOSName(platform: string): string {
+        const osMap: Record<string, string> = {
+            'win32': 'Windows',
+            'linux': 'Linux',
+            'darwin': 'macOS',
+            'aix': 'AIX',
+            'freebsd': 'FreeBSD',
+            'openbsd': 'OpenBSD',
+            'sunos': 'SunOS'
+        };
+        
+        return osMap[platform] || platform;
+    }
+    
+    private loadSharedState() {
+        try {
+            // Preserve the newly collected environment info
+            const newlyCollectedEnv = this.summary.environment;
+            
+            if (fs.existsSync(this.stateFile)) {
+                const stateData = fs.readFileSync(this.stateFile, 'utf8');
+                const state = JSON.parse(stateData);
+                
+                // Load state but preserve or update environment info
+                this.summary = state.summary || this.summary;
+                
+                // If we have a newly collected environment, or the existing one is empty, use the new one
+                if (newlyCollectedEnv && (!this.summary.environment || !this.summary.environment.browsers || this.summary.environment.browsers.length === 0)) {
+                    this.summary.environment = newlyCollectedEnv;
+                }
+                
+                this.pendingAttachments = state.pendingAttachments || [];
+                this.testNo = state.testNo || 0;
+            }
+        } catch (error) {
+            console.warn('Failed to load shared state:', error);
+        }
+    }
+    
+    private saveSharedState() {
+        try {
+            // Ensure the directory exists
+            const stateDir = path.dirname(this.stateFile);
+            if (!fs.existsSync(stateDir)) {
+                fs.mkdirSync(stateDir, { recursive: true });
+            }
+            
+            // Create a clean copy without circular references
+            const cleanPendingAttachments = this.pendingAttachments.map(pending => ({
+                testNum: pending.testNum,
+                folderTest: pending.folderTest,
+                attachments: pending.attachments.map(att => ({
+                    path: att.path,
+                    name: att.name
+                }))
+                // Remove the result object as it contains circular references
+            }));
+            
+            const state = {
+                summary: this.summary,
+                pendingAttachments: cleanPendingAttachments,
+                testNo: this.testNo
+            };
+            fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
+        } catch (error) {
+            console.warn('Failed to save shared state:', error);
+        }
     }
 
     async onTestEnd(test: TestCase, result: TestResult) {
         this.testNo++;
         const folderTest = path.join("specs-report", this.testNo.toString());
-        const groupKey = path.relative(this.testDir, test.location.file);
+        // Normalize path to use forward slashes for consistency across platforms
+        const groupKey = path.relative(this.testDir, test.location.file).replace(/\\/g, '/');
 
         // Ensure an array exists for this group
         if (!this.summary.groupedResults[groupKey]) {
@@ -80,11 +212,17 @@ class SpecsReporter implements Reporter {
                 name: attachment.name ?? '' 
             })) ?? [];
         
+        // Store ALL attachments (including video and screenshots) for later copying
+        const allAttachments = result.attachments?.map(attachment => ({ 
+            path: attachment.path ?? '', 
+            name: attachment.name ?? '' 
+        })) ?? [];
+        
         // Store attachment info for later copying (after all tests complete)
         this.pendingAttachments.push({
             testNum: this.testNo,
             folderTest: folderTest,
-            attachments: attachments,
+            attachments: allAttachments, // Store ALL attachments including video and screenshots
             result: result
         });
 
@@ -160,8 +298,11 @@ class SpecsReporter implements Reporter {
                 this.summary.totalSkipped++;
                 break;
         }
-
+        
         this.summary.total++;
+        
+        // Save shared state after each test
+        this.saveSharedState();
         
         const fileName = 'index.html';
         const testFilePath = path.join(folderTest, fileName);
@@ -174,7 +315,7 @@ class SpecsReporter implements Reporter {
             try {
                 const copiedFiles: string[] = [];
                 
-                // Copy attachments
+                // Copy all attachments (including video, screenshots, and other attachments)
                 for (const attachment of pending.attachments) {
                     if (attachment.path) {
                         const copiedFile = this.fileHelper.copyFileToResults(pending.folderTest, attachment.path);
@@ -184,29 +325,9 @@ class SpecsReporter implements Reporter {
                     }
                 }
                 
-                // Copy video
-                const videoAttachment = pending.result.attachments?.find((att: any) => att.name === 'video');
-                if (videoAttachment?.path) {
-                    const copiedFile = this.fileHelper.copyFileToResults(pending.folderTest, videoAttachment.path);
-                    if (copiedFile) {
-                        copiedFiles.push(copiedFile);
-                    }
-                }
-                
-                // Copy screenshots
-                const screenshotAttachments = pending.result.attachments?.filter((att: any) => att.name === 'screenshot') ?? [];
-                for (const screenshot of screenshotAttachments) {
-                    if (screenshot.path) {
-                        const copiedFile = this.fileHelper.copyFileToResults(pending.folderTest, screenshot.path);
-                        if (copiedFile) {
-                            copiedFiles.push(copiedFile);
-                        }
-                    }
-                }
-                
-                // Update the HTML file to use correct filenames
+                // Update the HTML file to use correct filenames if any files were copied
                 if (copiedFiles.length > 0) {
-                    await this.updateTestHtmlWithCorrectFilenames(pending.folderTest, pending.result.attachments || []);
+                    await this.updateTestHtmlWithCorrectFilenames(pending.folderTest, pending.attachments || []);
                 }
             } catch (error) {
                 console.warn(`Failed to copy attachments for test ${pending.testNum}:`, error);
@@ -231,26 +352,44 @@ class SpecsReporter implements Reporter {
         
         let htmlContent = fs.readFileSync(htmlPath, 'utf8');
         
-        // Update screenshot references
-        const screenshotAttachment = attachments.find((att: any) => att.name === 'screenshot');
-        if (screenshotAttachment?.path) {
-            const screenshotName = path.basename(screenshotAttachment.path);
-            htmlContent = htmlContent.replace(/src="screenshot"/g, `src="${screenshotName}"`);
+        // Update screenshot references - use actual copied filename
+        const screenshotAttachments = attachments.filter((att: any) => att.name === 'screenshot');
+        for (const screenshotAttachment of screenshotAttachments) {
+            if (screenshotAttachment.path) {
+                const actualFileName = path.basename(screenshotAttachment.path);
+                const escapedFileName = actualFileName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // Replace src="screenshot" with actual filename
+                htmlContent = htmlContent.replace(/src="screenshot"/g, `src="${actualFileName}"`);
+            }
         }
         
-        // Update video references
+        // Update video references - use actual copied filename
         const videoAttachment = attachments.find((att: any) => att.name === 'video');
         if (videoAttachment?.path) {
-            const videoName = path.basename(videoAttachment.path);
-            htmlContent = htmlContent.replace(/src="video"/g, `src="${videoName}"`);
-            htmlContent = htmlContent.replace(/href="video"/g, `href="${videoName}"`);
+            const actualFileName = path.basename(videoAttachment.path);
+            const escapedFileName = actualFileName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // Replace src="video" with actual filename
+            htmlContent = htmlContent.replace(/src="video"/g, `src="${actualFileName}"`);
+            htmlContent = htmlContent.replace(/href="video"/g, `href="${actualFileName}"`);
         }
         
-        // Update attachment links
+        // Update attachment links and add download attribute (remove target="_blank" to allow download)
         for (const attachment of attachments) {
             if (attachment.path && attachment.name !== 'video' && attachment.name !== 'screenshot') {
-                const fileName = path.basename(attachment.path);
-                htmlContent = htmlContent.replace(new RegExp(`href="${attachment.name}"`, 'g'), `href="${fileName}"`);
+                const actualFileName = path.basename(attachment.path);
+                const nameWithoutExt = path.parse(attachment.name).name; // "error-context" from "error-context.md"
+                
+                // Replace href="attachment-name" with href="actual-filename", add download, and remove target="_blank"
+                const escapedNameWithoutExt = nameWithoutExt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                htmlContent = htmlContent.replace(
+                    new RegExp(`<a\\s+href="${escapedNameWithoutExt}"([^>]*?)>`, 'g'), 
+                    `<a href="${actualFileName}" download="${actualFileName}">`
+                );
+                // Also remove target="_blank" that might be added by the template
+                htmlContent = htmlContent.replace(
+                    new RegExp(`(<a\\s+[^>]*?)target="_blank"([^>]*?)>`, 'g'), 
+                    `$1$2>`
+                );
             }
         }
         

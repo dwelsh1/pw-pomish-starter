@@ -2,26 +2,44 @@
 
 The Specs Reporter is a stakeholder-friendly reporting solution that generates detailed, readable test reports with dynamic charts and comprehensive test step documentation.
 
+## Current Status ✅
+
+**Latest Version Features**:
+- ✅ Sidebar navigation (Dashboard, Test Specs, Tests, Settings)
+- ✅ Advanced filtering (Status, Duration, Browser, Tags, Search)
+- ✅ Settings panel with Videos/Screenshots toggle
+- ✅ Full-page screenshots for complete page capture
+- ✅ Fixed attachment downloads
+- ✅ Fixed "Back to Summary" navigation
+- ✅ AI-powered Copy Prompt feature (Full, Quick, Debug)
+- ✅ Responsive mobile-friendly design
+- ✅ Real-time charts and statistics
+
 ## Overview
 
 The Specs Reporter provides:
 - **Stakeholder-Friendly Interface**: Clear, non-technical test descriptions
 - **Dynamic Charts**: Interactive visualizations using ApexCharts
+- **Advanced Filtering**: Real-time search and filter by status, duration, browser, and tags
+- **Settings Panel**: Toggle Videos and Screenshots visibility with persistent preferences
+- **Sidebar Navigation**: Modern navigation with Dashboard, Test Specs, Tests, and Settings
 - **Detailed Test Steps**: Comprehensive test documentation with preconditions, steps, and postconditions
 - **Individual Test Pages**: Dedicated pages for each test with full details
+- **Full-Page Screenshots**: Captures entire page for better debugging context
 - **Media Integration**: Screenshots, videos, and attachments with proper organization
 - **AI-Powered Copy Prompt Feature**: Generate AI-friendly prompts for failed tests
 - **Responsive Design**: Works perfectly on desktop and mobile devices
+- **In-Page Test Details**: Seamless navigation without page reloads
 
 ## Features
 
 ### Dashboard Overview
-- **Test Summary Cards**: Visual cards showing total, passed, failed, and skipped tests
+- **Test Summary Cards**: Visual cards showing total, passed, failed, skipped, and flaky tests
 - **Interactive Charts**: 
-  - Pie chart showing test distribution
-  - Bar chart showing top 10 longest-running tests
-- **Test Groups**: Tests organized by file with direct links to individual reports
-- **Real-time Statistics**: Live test execution metrics
+  - Pie chart showing test distribution (Passed, Failed, Skipped)
+  - Bar chart showing top 10 longest-running tests with durations
+- **Summary Statistics**: Total duration and generation timestamp
+- **Real-time Data**: All statistics calculated from actual test execution
 
 ### Individual Test Reports
 - **Test Header**: Status icon, title, duration, browser, and tags
@@ -69,34 +87,53 @@ The Custom Steps Reporter includes an innovative **Copy Prompt** feature that ge
 
 ## Sidebar Navigation Features
 
-The Steps Reporter now features a modern sidebar navigation system that provides:
+The Specs Reporter features a modern sidebar navigation system that provides:
 
 ### Navigation Options
-- **Dashboard**: Overview of test results with summary statistics
-- **Tests**: List of all tests organized by file with status indicators
-- **Test Details**: In-page test details with enhanced Copy Prompt functionality
+- **Dashboard**: Overview of test results with summary statistics and interactive charts
+- **Test Specs**: Browse tests organized by spec file with test counts
+- **Tests**: List of all tests with direct links to test details
+- **Settings**: Configure report display preferences (Videos/Screenshots visibility)
+
+### Advanced Filtering System
+The sidebar includes a comprehensive filtering system:
+- **Search**: Filter by test title or tags (real-time search)
+- **Status**: Toggle Passed, Failed, Skipped, Flaky tests
+- **Browser**: Filter by browser (rbp-chromium, rbp-edge, etc.)
+- **Tags**: Filter by test tags (e.g., @smoke, @api, @visual)
+- **Duration**: Filter by test duration (Fast <1s, Medium 1-5s, Slow >5s)
+- **Clear Filters**: One-click reset to show all tests
+
+### Settings Panel (NEW!)
+A dedicated Settings section allows you to:
+- **Toggle Videos**: Show or hide video recordings in test details
+- **Toggle Screenshots**: Show or hide screenshots in test details
+- **Persistent Settings**: Preferences saved to localStorage
+- **Cross-Tab Persistence**: Settings apply to test detail pages in new tabs
 
 ### Key Benefits
 - **Single-Page Application**: No page refreshes when navigating between sections
 - **Responsive Design**: Mobile-friendly sidebar that collapses on smaller screens
 - **Browser Navigation**: Back/forward button support with hash-based routing
-- **Enhanced UX**: Seamless navigation between dashboard, test list, and individual test details
+- **Enhanced UX**: Seamless navigation between dashboard, test list, settings, and test details
+- **Real-time Filtering**: Instant filter results as you type or change options
 
 ### Technical Features
 - **Dynamic Content Loading**: Test details load without leaving the main page
 - **Global Prompt Storage**: Copy Prompt data stored globally for instant access
 - **Media Path Correction**: Automatic path fixing for screenshots and videos
-- **Clean Interface**: Removed unwanted navigation elements for better UX
+- **CSS-based Hiding**: Efficient media visibility toggling via CSS classes
+- **LocalStorage Integration**: Persistent user preferences
 
 ## Quick Start
 
 ### Basic Usage
 ```bash
 # Run tests with Specs reporting
-npm run test:steps
+npm run test:specs
 
 # Open the generated report
-npm run steps:open
+npm run specs:open
 ```
 
 ### Report Structure
@@ -136,11 +173,11 @@ class SpecsReporter implements Reporter {
 ## Available Scripts
 
 ### Test Execution
-- `npm run test:steps` - Run tests with Specs reporting
+- `npm run test:specs` - Run tests with Specs reporting
 
 ### Report Management
-- `npm run steps:open` - Open Specs report in browser
-- `npm run steps:clean` - Clean Specs report files
+- `npm run specs:open` - Open Specs report in browser
+- `npm run specs:clean` - Clean Specs report files
 
 ## Test Annotations
 
@@ -174,6 +211,18 @@ test('Login with valid user', {
   // Test implementation
 });
 ```
+
+### Using the Settings Panel
+
+The Settings panel provides quick toggles for media visibility:
+
+1. **Navigate to Settings**: Click "Settings" in the sidebar
+2. **Toggle Videos**: Use the toggle to show or hide video recordings
+3. **Toggle Screenshots**: Use the toggle to show or hide screenshots
+4. **View Test Details**: Navigate to any test to see the changes
+5. **Persist Across Sessions**: Settings are saved and remembered
+
+**Note**: These settings control display only - they don't change what gets captured by Playwright. The Playwright config in `playwright.config.ts` controls what actually gets recorded.
 
 ## Report Templates
 
@@ -241,7 +290,7 @@ Templates use inline CSS for easy customization:
 #### Report Not Generating
 ```bash
 # Check if the reporter is properly configured
-npm run test:steps -- --reporter=line
+npm run test:specs -- --reporter=line
 
 # Verify template files exist
 ls src/reporter/templates/
@@ -282,6 +331,21 @@ ls src/reporter/templates/
 # Solution: Ensure tests have proper descriptions and error handling
 ```
 
+#### Settings Not Working
+```bash
+# Settings not persisting
+# Cause: LocalStorage disabled or cleared
+# Solution: Check browser privacy settings, allow localStorage
+
+# Videos/Screenshots still showing after hiding
+# Cause: Cache or old HTML files
+# Solution: Clear browser cache or regenerate report
+
+# Settings not applying to new tabs
+# Cause: Settings are loaded on page load
+# Solution: Refresh test detail pages after changing settings
+```
+
 ### Performance Optimization
 
 1. **Reduce Media Size**: Compress screenshots and videos
@@ -294,26 +358,26 @@ ls src/reporter/templates/
 ### With CI/CD
 ```yaml
 # GitHub Actions example
-- name: Run Tests with Custom Steps Reporter
-  run: npm run test:steps
+- name: Run Tests with Specs Reporter
+  run: npm run test:specs
 
-- name: Upload Custom Steps Report
+- name: Upload Specs Report
   uses: actions/upload-artifact@v3
   with:
-    name: steps-report
+    name: specs-report
     path: specs-report/
 ```
 
 ### With Different Test Types
 ```bash
 # E2E Tests
-npm run test:steps -- tests/e2e/
+npm run test:specs -- tests/e2e/
 
 # API Tests  
-npm run test:steps -- tests/api/
+npm run test:specs -- tests/api/
 
 # Visual Tests
-npm run test:steps -- tests/visual/
+npm run test:specs -- tests/visual/
 ```
 
 ## Advanced Features

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { restfulBooker } from '../../src/selectors/rbp';
 
 test.describe('Intentional Failure Test', () => {
-  test('should fail when trying to click Contact999 link', async ({ page }) => {
+  test('should fail when trying to click Contact999 link', { tag: ['@smoke', '@failure', '@contact'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     

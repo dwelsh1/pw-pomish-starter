@@ -90,34 +90,41 @@
             flex-wrap: wrap;
         }
 
-        .copy-prompt-btn {
+        .copy-prompt-icon {
             background: rgba(255,255,255,0.2);
             color: white;
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 16px;
+            padding: 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 16px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            font-family: 'Roboto', sans-serif;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: all 0.3s;
+            margin-right: 8px;
         }
 
-        .copy-prompt-btn:hover {
+        .copy-prompt-icon:hover {
             background: rgba(255,255,255,0.3);
             border-color: rgba(255,255,255,0.5);
-            transform: translateY(-1px);
+            transform: scale(1.1);
         }
 
-        .copy-prompt-btn:active {
-            transform: translateY(0);
+        .copy-prompt-icon:active {
+            transform: scale(0.95);
         }
 
-        .copy-prompt-btn .material-symbols-outlined {
-            font-size: 18px;
+        .copy-prompt-icon .material-symbols-outlined {
+            font-size: 20px;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
         }
 
         .section {
@@ -279,8 +286,34 @@
     </style>
 </head>
 <body>
+    <script>
+        // Apply media visibility settings on page load (for test detail pages)
+        (function() {
+            const hideVideos = localStorage.getItem('specs-reporter-show-videos') === 'false';
+            const hideScreenshots = localStorage.getItem('specs-reporter-show-screenshots') === 'false';
+            
+            if (hideVideos) {
+                document.body.classList.add('hide-videos');
+            }
+            if (hideScreenshots) {
+                document.body.classList.add('hide-screenshots');
+            }
+        })();
+    </script>
+    <style>
+        /* Settings-based hiding for test detail pages */
+        body.hide-videos video,
+        body.hide-videos .media-item:has(video) {
+            display: none;
+        }
+
+        body.hide-screenshots img,
+        body.hide-screenshots .media-item:has(img) {
+            display: none;
+        }
+    </style>
     <div class="container">
-        <a href="../summary.html" class="back-link">
+        <a href="../index.html" class="back-link">
             <span class="material-symbols-outlined">arrow_back</span>
             Back to Summary
         </a>
@@ -305,17 +338,14 @@
                 
                 <% if (result.status === 'failed' && result.prompts) { %>
                 <div class="prompt-actions">
-                    <button class="copy-prompt-btn" onclick="copyPrompt('full')" data-prompt-type="full">
+                    <button class="copy-prompt-icon" onclick="copyPrompt('full')" data-prompt-type="full" title="Copy Full Prompt">
                         <span class="material-symbols-outlined">content_copy</span>
-                        Copy Full Prompt
                     </button>
-                    <button class="copy-prompt-btn" onclick="copyPrompt('quick')" data-prompt-type="quick">
+                    <button class="copy-prompt-icon" onclick="copyPrompt('quick')" data-prompt-type="quick" title="Copy Quick Prompt">
                         <span class="material-symbols-outlined">flash_on</span>
-                        Quick Analysis
                     </button>
-                    <button class="copy-prompt-btn" onclick="copyPrompt('debug')" data-prompt-type="debug">
+                    <button class="copy-prompt-icon" onclick="copyPrompt('debug')" data-prompt-type="debug" title="Copy Debug Prompt">
                         <span class="material-symbols-outlined">bug_report</span>
-                        Debug Help
                     </button>
                 </div>
                 <% } %>
@@ -402,7 +432,7 @@
                                     <% result.attachments.forEach(function(attachment) { %>
                                         <% if (attachment.path) { %>
                                             <li>
-                                                <a href="<%= attachment.path %>" target="_blank">
+                                                <a href="<%= attachment.path %>">
                                                     <span class="material-symbols-outlined">download</span>
                                                     <%= attachment.name %>
                                                 </a>

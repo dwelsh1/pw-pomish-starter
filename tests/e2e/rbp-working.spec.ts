@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('RBP Authentication Tests', () => {
-  test('should load homepage successfully', async ({ page }) => {
+  test('should load homepage successfully', { tag: ['@smoke', '@homepage', '@critical'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -9,7 +9,7 @@ test.describe('RBP Authentication Tests', () => {
     expect(title).toContain('Restful-booker-platform');
   });
 
-  test('should access admin page', async ({ page }) => {
+  test('should access admin page', { tag: ['@admin', '@navigation'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/admin');
     await page.waitForLoadState('networkidle');
     
@@ -17,7 +17,7 @@ test.describe('RBP Authentication Tests', () => {
     expect(url).toContain('admin');
   });
 
-  test('should find login form elements', async ({ page }) => {
+  test('should find login form elements', { tag: ['@login', '@form', '@ui'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/admin');
     await page.waitForLoadState('networkidle');
     
@@ -34,7 +34,7 @@ test.describe('RBP Authentication Tests', () => {
     await expect(submitButton).toBeVisible();
   });
 
-  test('should attempt admin login', async ({ page }) => {
+  test('should attempt admin login', { tag: ['@login', '@admin', '@integration'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/admin');
     await page.waitForLoadState('networkidle');
     
@@ -60,7 +60,7 @@ test.describe('RBP Authentication Tests', () => {
 });
 
 test.describe('RBP Room Tests', () => {
-  test('should find room elements on homepage', async ({ page }) => {
+  test('should find room elements on homepage', { tag: ['@room', '@homepage', '@ui'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -72,7 +72,10 @@ test.describe('RBP Room Tests', () => {
     console.log('Found', roomCount, 'room-related elements');
   });
 
-  test('should find booking forms', async ({ page }) => {
+  test('should find booking forms', { tag: ['@booking', '@form', '@ui'] }, async ({ page }) => {
+    // Skip this test to demonstrate skipped test functionality
+    test.skip();
+    
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -93,7 +96,7 @@ test.describe('RBP Room Tests', () => {
     }
   });
 
-  test('should interact with room elements', async ({ page }) => {
+  test('should interact with room elements', { tag: ['@room', '@interaction', '@click'] }, async ({ page }) => {
     try {
       await page.goto('https://automationintesting.online/', { timeout: 60000 });
       await page.waitForLoadState('networkidle', { timeout: 30000 });
@@ -126,7 +129,7 @@ test.describe('RBP Room Tests', () => {
 });
 
 test.describe('RBP Contact Tests', () => {
-  test('should find contact form', async ({ page }) => {
+  test('should find contact form', { tag: ['@contact', '@form', '@ui'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -138,7 +141,7 @@ test.describe('RBP Contact Tests', () => {
     console.log('Found', contactCount, 'contact-related elements');
   });
 
-  test('should interact with contact form', async ({ page }) => {
+  test('should interact with contact form', { tag: ['@contact', '@form', '@interaction'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -173,7 +176,7 @@ test.describe('RBP Contact Tests', () => {
 });
 
 test.describe('RBP Navigation Tests', () => {
-  test('should find navigation elements', async ({ page }) => {
+  test('should find navigation elements', { tag: ['@navigation', '@ui', '@smoke'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     
@@ -198,7 +201,7 @@ test.describe('RBP Navigation Tests', () => {
     expect(totalLinks).toBeGreaterThan(0);
   });
 
-  test('should test navigation links', async ({ page }) => {
+  test('should test navigation links', { tag: ['@navigation', '@links', '@interaction'] }, async ({ page }) => {
     await page.goto('https://automationintesting.online/');
     await page.waitForLoadState('networkidle');
     

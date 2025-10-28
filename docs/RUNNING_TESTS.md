@@ -24,7 +24,7 @@ npm test
 ```bash
 npm run test:ortoni    # Ortoni Report
 npm run test:allure    # Allure Report  
-npm run test:steps     # Custom Steps Report
+npm run test:specs     # Custom Steps Report
 npm run test:monocart  # Monocart Report
 ```
 
@@ -32,7 +32,7 @@ npm run test:monocart  # Monocart Report
 ```bash
 npm run show-ortoni-report  # Ortoni
 npm run allure:serve        # Allure
-npm run steps:open          # Custom Steps
+npm run specs:open          # Custom Steps
 npm run monocart:open       # Monocart
 ```
 
@@ -41,7 +41,7 @@ npm run monocart:open       # Monocart
 |----------|-----------|-------------|
 | **Ortoni** | `npm run test:ortoni` | `npm run show-ortoni-report` |
 | **Allure** | `npm run test:allure` | `npm run allure:serve` |
-| **Steps** | `npm run test:steps` | `npm run steps:open` |
+| **Steps** | `npm run test:specs` | `npm run specs:open` |
 | **Monocart** | `npm run test:monocart` | `npm run monocart:open` |
 
 ### Visual Testing Commands Summary
@@ -85,7 +85,7 @@ npm run test:all            # Same as above
 ```bash
 npm run test:ortoni         # All tests with Ortoni
 npm run test:allure         # All tests with Allure
-npm run test:steps          # All tests with Custom Steps
+npm run test:specs          # All tests with Custom Steps
 ```
 
 ### 2. Running Tests by Type
@@ -277,12 +277,12 @@ npm run allure:open         # Opens static report
 
 #### Generate Report
 ```bash
-npm run test:steps          # Generates steps-report/
+npm run test:specs          # Generates steps-report/
 ```
 
 #### View Report
 ```bash
-npm run steps:open          # Opens summary.html
+npm run specs:open          # Opens summary.html
 ```
 
 #### Report Location
@@ -544,7 +544,7 @@ npm run allure:generate
 ls src/reporter/templates/
 
 # Verify reporter configuration
-npm run test:steps -- --reporter=line
+npm run test:specs -- --reporter=line
 ```
 
 ### 4. Browser-Specific Issues
@@ -626,7 +626,7 @@ npm run test:chromium -- tests/e2e/rbp-authentication.spec.ts
 npm test
 
 # 3. Run with specific reporter for review
-npm run test:steps
+npm run test:specs
 ```
 
 #### CI/CD Workflow
@@ -650,7 +650,7 @@ npm run allure:generate
 ```bash
 # Clean old reports
 npm run allure:clean
-npm run steps:clean
+npm run specs:clean
 
 # Clean test results
 rm -rf test-results/
